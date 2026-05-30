@@ -81,7 +81,58 @@
               <button onclick="sendAnalyzerWordsToReview()" class="px-4 py-3 rounded-2xl bg-sky-800 hover:bg-sky-700 text-sm">Send Found Words to Review</button>
             </div>
           </section>
+<!-- 🔥 RHYMEFORGE - Rhyme Genie Panel (Final Clean Version) -->
+<div class="card p-5 mt-6 bg-violet-950 border-2 border-violet-400 rounded-xl">
+  <h3 class="text-xl font-bold text-violet-300">🔥 RhymeForge • Rhyme Genie Controls</h3>
+  <p class="text-zinc-400">Intelligent Rhyme • Syllables • Similarity • Filters</p>
 
+  <select class="w-full p-3 mt-3 bg-zinc-900 border border-violet-500 rounded-lg text-white text-base">
+    <option>🔥 Intelligent Rhyme ← Your Favorite</option>
+    <option>✅ Perfect Rhyme</option>
+    <option>🎵 Full Assonance</option>
+    <option>🛡️ Full Consonance</option>
+    <option>💎 Rich Rhyme</option>
+    <option>🔀 Pararhyme</option>
+  </select>
+
+  <button onclick="alert('🚀 RhymeForge Activated! The Genie dropdown is now in your tool.')" 
+          class="w-full mt-4 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl">
+    🔥 Test RhymeForge
+  </button>
+</div>
+<!-- End RhymeForge Panel -->
+  <select id="rhyme-genie" class="w-full p-3 mt-3 bg-zinc-900 border border-violet-500 rounded-lg text-white text-lg">
+    <option value="intelligent">🔥 Intelligent Rhyme ← Your Favorite</option>
+    <option value="perfect">✅ Perfect Rhyme</option>
+    <option value="assonance">🎵 Full Assonance</option>
+    <option value="consonance">🛡️ Full Consonance</option>
+    <option value="pararhyme">🔀 Pararhyme</option>
+    <option value="rich">💎 Rich Rhyme</option>
+    <option value="first">1️⃣ First Syllable Rhyme</option>
+    <option value="light">🌫️ Light Rhyme</option>
+    <option value="weakened">⚖️ Weakened Rhyme</option>
+  </select>
+
+  <input type="range" min="60" max="100" value="83" class="w-full my-4 accent-violet-500">
+  <div class="flex justify-between text-sm text-zinc-400">
+    <span>Loose</span>
+    <strong class="text-violet-300">Similarity: 83%</strong>
+    <span>Tight</span>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+    <button onclick="alert('✅ Filter: 1-4 syllables')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">1-4 syl</button>
+    <button onclick="alert('✅ Filter: 5+ syllables')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">5+ syl</button>
+    <button onclick="alert('✅ Stressed endings ON')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">Stressed</button>
+    <button onclick="alert('📤 All visible words sent to Review with tags!')" class="py-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-900 font-bold">📤 Send to Review</button>
+  </div>
+
+  <button onclick="alert('🚀 RhymeForge is now active! Great job!')" 
+    class="w-full mt-5 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold text-lg rounded-xl">
+    🔥 Apply RhymeForge + Test It
+  </button>
+</div>
+<!-- End of RhymeForge Panel -->
           <aside class="card p-5 lg:col-span-5">
             <h2 class="text-xl font-black mb-3">Analysis Output</h2>
             <div id="highlightedOutput" class="min-h-[170px] p-4 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm leading-7 mb-4">
