@@ -7,942 +7,187 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root { --accent: #6366f1; }
-    .tab-active { border-bottom: 3px solid var(--accent); color: #a5b4fc; font-weight: 800; }
-    .card { background: #18181b; border: 1px solid #27272a; border-radius: 1.5rem; }
-    .word-card { transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
-    .word-card:hover { transform: translateY(-2px); border-color: #52525b; box-shadow: 0 18px 28px -22px #000; }
-    .scroll-soft::-webkit-scrollbar { width: 9px; height: 9px; }
-    .scroll-soft::-webkit-scrollbar-track { background: #18181b; border-radius: 999px; }
-    .scroll-soft::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 999px; }
-    mark.allit { padding: 0.1rem 0.25rem; border-radius: 0.35rem; background: #312e81; color: #c7d2fe; }
-    mark.rhyme { padding: 0.1rem 0.25rem; border-radius: 0.35rem; background: #064e3b; color: #a7f3d0; }
+    body { background:#09090b; color:#f4f4f5; }
+    .card { background:#18181b; border:1px solid #27272a; border-radius:1.25rem; }
+    textarea, input, select { background:#09090b; border:1px solid #3f3f46; border-radius:.75rem; padding:.75rem; width:100%; }
+    button { background:#6366f1; padding:.75rem 1rem; border-radius:.75rem; font-weight:800; }
+    button.secondary { background:#27272a; }
+    .pill { display:inline-block; padding:.25rem .6rem; border-radius:999px; background:#27272a; margin:.15rem; }
+    pre { white-space:pre-wrap; background:#09090b; border:1px solid #27272a; padding:1rem; border-radius:1rem; }
   </style>
-
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0a0a0f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="RhymeWeave">
-  <link rel="apple-touch-icon" href="icon-192.png">
-
 </head>
-
-<body class="bg-zinc-950 text-zinc-200 min-h-screen">
-  <div class="max-w-7xl mx-auto p-4 sm:p-6">
-    <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-7">
-      <div>
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tighter">RhymeWeave V2</h1>
-        <p class="text-zinc-400 mt-1">Airtight alliteration + rhyme finder for live writing flow.</p>
-      </div>
-      <div class="flex flex-wrap gap-2 text-xs">
-        <span class="px-3 py-2 rounded-full bg-zinc-900 border border-zinc-800">Datamuse online search</span>
-        <span class="px-3 py-2 rounded-full bg-zinc-900 border border-zinc-800">Local browser saving</span>
-        <button onclick="exportJSON()" class="px-3 py-2 rounded-full bg-indigo-700 hover:bg-indigo-600">Export JSON</button>
-      </div>
-    </header>
-
-    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
-      <div class="card p-4"><div class="text-xs text-zinc-500">Approved</div><div id="statApproved" class="text-3xl font-black text-emerald-400">0</div></div>
-      <div class="card p-4"><div class="text-xs text-zinc-500">Maybe</div><div id="statMaybe" class="text-3xl font-black text-amber-400">0</div></div>
-      <div class="card p-4"><div class="text-xs text-zinc-500">Review</div><div id="statReview" class="text-3xl font-black text-sky-400">0</div></div>
-      <div class="card p-4"><div class="text-xs text-zinc-500">Rejected</div><div id="statRejected" class="text-3xl font-black text-red-400">0</div></div>
-      <div class="card p-4 col-span-2 lg:col-span-1"><div class="text-xs text-zinc-500">Chain</div><div id="statChain" class="text-3xl font-black text-violet-400">0</div></div>
+<body>
+  <main class="max-w-6xl mx-auto p-4 space-y-6">
+    <section class="card p-6">
+      <h1 class="text-3xl font-black mb-2">RhymeWeave V2</h1>
+      <p class="text-zinc-400">Alliteration sorter, rhyme helper, A-Z cleaner, and writing flow checker.</p>
     </section>
 
-    <nav class="flex overflow-x-auto border-b border-zinc-800 mb-6 scroll-soft">
-      <button class="tab tab-active px-5 py-3 whitespace-nowrap" data-tab="writer" onclick="switchTab('writer')">Live Writer</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="finder" onclick="switchTab('finder')">Finder</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="chains" onclick="switchTab('chains')">Phrase Chains</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="alliteration" onclick="switchTab('alliteration')">Alliteration Lines</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="prompts" onclick="switchTab('prompts')">Prompts</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="review" onclick="switchTab('review')">Review Sorter</button>
-      <button class="tab px-5 py-3 whitespace-nowrap" data-tab="data" onclick="switchTab('data')">Data</button>
-    </nav>
+    <section class="card p-6 space-y-4">
+      <h2 class="text-xl font-bold">1. Paste Text Here</h2>
+      <textarea id="inputText" rows="12" placeholder="Paste your lines here..."></textarea>
+      <div class="flex flex-wrap gap-3">
+        <button onclick="processText()">Clean + Sort A-Z</button>
+        <button class="secondary" onclick="clearAll()">Clear</button>
+        <button class="secondary" onclick="downloadTxt()">Download TXT</button>
+      </div>
+    </section>
 
-    <main>
-      <!-- LIVE WRITER -->
-      <section id="writer" class="tab-content">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <section class="card p-5 lg:col-span-7">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-              <div>
-                <h2 class="text-xl font-black">Live Writing Flow Checker</h2>
-                <p class="text-xs text-zinc-500 mt-1">Paste or write text. It highlights alliteration groups and rhyme-like endings.</p>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <button onclick="analyzeWriting()" class="px-3 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-600 text-xs font-bold">Analyze</button>
-                <button onclick="copyText('highlightedOutput')" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Copy Analysis</button>
-              </div>
-            </div>
-            <textarea id="writingText" rows="12" placeholder="Write or paste your line, verse, paragraph, or word list here..." class="w-full bg-zinc-950 border border-zinc-700 rounded-2xl p-4 text-sm leading-7 outline-none focus:border-indigo-500"></textarea>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-              <button onclick="sortTextAZ()" class="px-4 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-sm">Sort Words A–Z</button>
-              <button onclick="extractAlliterationWords()" class="px-4 py-3 rounded-2xl bg-violet-800 hover:bg-violet-700 text-sm">Extract Alliterations</button>
-              <button onclick="sendAnalyzerWordsToReview()" class="px-4 py-3 rounded-2xl bg-sky-800 hover:bg-sky-700 text-sm">Send Found Words to Review</button>
-            </div>
-          </section>
-<!-- 🔥 RHYMEFORGE - Rhyme Genie Panel (Final Clean Version) -->
-<div class="card p-5 mt-6 bg-violet-950 border-2 border-violet-400 rounded-xl">
-  <h3 class="text-xl font-bold text-violet-300">🔥 RhymeForge • Rhyme Genie Controls</h3>
-  <p class="text-zinc-400">Intelligent Rhyme • Syllables • Similarity • Filters</p>
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="card p-4">
+        <h3 class="font-bold">Total Kept</h3>
+        <p id="keptCount" class="text-3xl font-black">0</p>
+      </div>
+      <div class="card p-4">
+        <h3 class="font-bold">Duplicates Removed</h3>
+        <p id="dupCount" class="text-3xl font-black">0</p>
+      </div>
+      <div class="card p-4">
+        <h3 class="font-bold">Review / Junk</h3>
+        <p id="reviewCount" class="text-3xl font-black">0</p>
+      </div>
+    </section>
 
-  <select class="w-full p-3 mt-3 bg-zinc-900 border border-violet-500 rounded-lg text-white text-base">
-    <option>🔥 Intelligent Rhyme ← Your Favorite</option>
-    <option>✅ Perfect Rhyme</option>
-    <option>🎵 Full Assonance</option>
-    <option>🛡️ Full Consonance</option>
-    <option>💎 Rich Rhyme</option>
-    <option>🔀 Pararhyme</option>
-  </select>
+    <section class="card p-6 space-y-4">
+      <h2 class="text-xl font-bold">2. A-Z Output</h2>
+      <div id="letterButtons" class="flex flex-wrap gap-2"></div>
+      <pre id="outputText">Your cleaned A-Z output will appear here.</pre>
+    </section>
 
-  <button onclick="alert('🚀 RhymeForge Activated! The Genie dropdown is now in your tool.')" 
-          class="w-full mt-4 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl">
-    🔥 Test RhymeForge
-  </button>
-</div>
-<!-- End RhymeForge Panel -->
-  <select id="rhyme-genie" class="w-full p-3 mt-3 bg-zinc-900 border border-violet-500 rounded-lg text-white text-lg">
-    <option value="intelligent">🔥 Intelligent Rhyme ← Your Favorite</option>
-    <option value="perfect">✅ Perfect Rhyme</option>
-    <option value="assonance">🎵 Full Assonance</option>
-    <option value="consonance">🛡️ Full Consonance</option>
-    <option value="pararhyme">🔀 Pararhyme</option>
-    <option value="rich">💎 Rich Rhyme</option>
-    <option value="first">1️⃣ First Syllable Rhyme</option>
-    <option value="light">🌫️ Light Rhyme</option>
-    <option value="weakened">⚖️ Weakened Rhyme</option>
-  </select>
-
-  <input type="range" min="60" max="100" value="83" class="w-full my-4 accent-violet-500">
-  <div class="flex justify-between text-sm text-zinc-400">
-    <span>Loose</span>
-    <strong class="text-violet-300">Similarity: 83%</strong>
-    <span>Tight</span>
-  </div>
-
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
-    <button onclick="alert('✅ Filter: 1-4 syllables')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">1-4 syl</button>
-    <button onclick="alert('✅ Filter: 5+ syllables')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">5+ syl</button>
-    <button onclick="alert('✅ Stressed endings ON')" class="py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded">Stressed</button>
-    <button onclick="alert('📤 All visible words sent to Review with tags!')" class="py-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-900 font-bold">📤 Send to Review</button>
-  </div>
-
-  <button onclick="alert('🚀 RhymeForge is now active! Great job!')" 
-    class="w-full mt-5 py-4 bg-violet-600 hover:bg-violet-500 text-white font-bold text-lg rounded-xl">
-    🔥 Apply RhymeForge + Test It
-  </button>
-</div>
-<!-- End of RhymeForge Panel -->
-          <aside class="card p-5 lg:col-span-5">
-            <h2 class="text-xl font-black mb-3">Analysis Output</h2>
-            <div id="highlightedOutput" class="min-h-[170px] p-4 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm leading-7 mb-4">
-              Your highlighted text appears here.
-            </div>
-            <div id="analysisSummary" class="grid grid-cols-1 gap-3"></div>
-          </aside>
-        </div>
-      </section>
-
-      <!-- FINDER -->
-      <section id="finder" class="tab-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <aside class="card p-5 lg:col-span-4">
-            <h2 class="text-xl font-black mb-4">Word Finder</h2>
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Base word</label>
-            <div class="flex gap-2 mt-2 mb-4">
-              <input id="wordInput" value="love" placeholder="love, flame, night..." class="flex-1 min-w-0 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none focus:border-indigo-500" />
-              <button onclick="searchRhymes()" class="px-5 rounded-2xl bg-indigo-700 hover:bg-indigo-600 font-bold">Search</button>
-            </div>
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Rhyme level</label>
-            <select id="levelSelect" onchange="updateLevelHelp()" class="w-full mt-2 mb-3 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none focus:border-indigo-500">
-              <option value="1">Level 1 — Perfect rhyme</option>
-              <option value="2">Level 2 — Family / partner rhyme</option>
-              <option value="3">Level 3 — Assonance / consonant texture</option>
-              <option value="4">Level 4 — Additive / substitution near-rhyme</option>
-            </select>
-            <p id="levelHelp" class="text-xs text-zinc-500 mb-5"></p>
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Browse A–Z</label>
-            <div id="letters" class="flex flex-wrap gap-1 mt-2 mb-5"></div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="searchLetterAndRhyme()" class="px-3 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-sm">Letter + Rhyme</button>
-              <button onclick="clearResults()" class="px-3 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 text-sm">Clear Results</button>
-            </div>
-
-            <div class="mt-5 p-4 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 space-y-1">
-              <div><b class="text-emerald-400">1 Perfect:</b> strongest ending sound matches</div>
-              <div><b class="text-amber-400">2 Family:</b> flexible near rhymes</div>
-              <div><b class="text-sky-400">3 Texture:</b> shared sonic feel / sounds-like</div>
-              <div><b class="text-purple-400">4 Experimental:</b> loose near-rhyme candidates</div>
-            </div>
-          </aside>
-
-          <section class="card p-5 lg:col-span-8">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <div>
-                <h2 class="text-xl font-black">Results <span id="resultCount" class="text-sm text-zinc-500"></span></h2>
-                <p id="resultInfo" class="text-xs text-zinc-500 mt-1">Search rhymes or browse by letter.</p>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <button onclick="sendVisibleToReview()" class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-600 text-xs">Send Visible to Review</button>
-                <button onclick="exportVisibleCSV()" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Export Visible CSV</button>
-              </div>
-            </div>
-            <div id="results" class="space-y-2 max-h-[620px] overflow-auto pr-2 scroll-soft"></div>
-          </section>
-        </div>
-      </section>
-
-      <!-- CHAINS -->
-      <section id="chains" class="tab-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <section class="card p-5 lg:col-span-5">
-            <h2 class="text-xl font-black mb-4">Phrase Chain Builder</h2>
-            <div class="flex gap-2 mb-3">
-              <input id="chainInput" placeholder="Add word..." class="flex-1 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none focus:border-violet-500" />
-              <button onclick="addChainInput()" class="px-5 rounded-2xl bg-violet-700 hover:bg-violet-600 font-bold">Add</button>
-            </div>
-
-            <div class="flex flex-wrap gap-2 mb-4">
-              <button onclick="loadListIntoChain('approved')" class="px-3 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-xs">Use Approved</button>
-              <button onclick="loadVisibleIntoChain()" class="px-3 py-2 rounded-xl bg-blue-800 hover:bg-blue-700 text-xs">Use Visible</button>
-              <button onclick="shuffleChain()" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Shuffle</button>
-              <button onclick="clearChain()" class="px-3 py-2 rounded-xl bg-red-800 hover:bg-red-700 text-xs">Clear</button>
-            </div>
-
-            <div id="chainWords" class="min-h-[120px] p-4 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-wrap gap-2"></div>
-          </section>
-
-          <section class="card p-5 lg:col-span-7">
-            <h2 class="text-xl font-black mb-4">Chain Output</h2>
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Chain style</label>
-            <select id="chainStyle" class="w-full mt-2 mb-4 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none">
-              <option value="linked">Linked phrase chain</option>
-              <option value="poetic">Poetic sentence</option>
-              <option value="cinematic">Cinematic line</option>
-              <option value="mythic">Mythic line</option>
-              <option value="rap">Rap / hook line</option>
-            </select>
-            <button onclick="generateChain()" class="px-5 py-3 rounded-2xl bg-indigo-700 hover:bg-indigo-600 font-bold mb-4">Generate Chain Output</button>
-            <div id="chainOutput" class="min-h-[180px] p-5 rounded-2xl bg-zinc-950 border border-zinc-800 font-serif text-xl">Add words, then generate a chain.</div>
-            <button onclick="copyText('chainOutput')" class="mt-3 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Copy Output</button>
-          </section>
-        </div>
-      </section>
-
-      <!-- ALLITERATION -->
-      <section id="alliteration" class="tab-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <aside class="card p-5 lg:col-span-4">
-            <h2 class="text-xl font-black mb-4">Alliteration Generator</h2>
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Starting letter</label>
-            <input id="allitLetter" maxlength="1" value="B" class="w-full mt-2 mb-4 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 text-center text-3xl font-black outline-none focus:border-violet-500" />
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Line style</label>
-            <select id="allitStyle" class="w-full mt-2 mb-4 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none">
-              <option value="smooth">Smooth poetic</option>
-              <option value="cinematic">Cinematic</option>
-              <option value="mythic">Mythic / divine</option>
-              <option value="nature">Nature image</option>
-              <option value="song">Song hook</option>
-            </select>
-
-            <button onclick="generateAlliteration()" class="w-full px-5 py-3 rounded-2xl bg-violet-700 hover:bg-violet-600 font-bold">Generate Line</button>
-          </aside>
-
-          <section class="card p-5 lg:col-span-8">
-            <h2 class="text-xl font-black mb-4">Generated Alliteration</h2>
-            <div id="allitOutput" class="min-h-[190px] p-5 rounded-2xl bg-zinc-950 border border-zinc-800 font-serif text-xl">Choose a letter and generate.</div>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <button onclick="copyText('allitOutput')" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Copy Line</button>
-              <button onclick="sendAlliterationWordsToReview()" class="px-3 py-2 rounded-xl bg-sky-800 hover:bg-sky-700 text-xs">Send Words to Review</button>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <!-- PROMPTS -->
-      <section id="prompts" class="tab-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <aside class="card p-5 lg:col-span-4">
-            <h2 class="text-xl font-black mb-4">Prompt Creator</h2>
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Prompt type</label>
-            <select id="promptType" class="w-full mt-2 mb-4 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none">
-              <option value="cinematic">Cinematic line</option>
-              <option value="song">Song hook</option>
-              <option value="poem">Poetry line</option>
-              <option value="mythic">Mythic scene</option>
-              <option value="rap">Rap bar</option>
-              <option value="chain">Phrase-chain exercise</option>
-            </select>
-
-            <label class="text-xs text-zinc-500 uppercase tracking-widest">Use words from</label>
-            <select id="promptSource" class="w-full mt-2 mb-4 bg-zinc-950 border border-zinc-700 rounded-2xl px-4 py-3 outline-none">
-              <option value="approved">Approved</option>
-              <option value="maybe">Maybe</option>
-              <option value="needsReview">Needs Review</option>
-              <option value="chain">Current Chain</option>
-              <option value="visible">Visible Results</option>
-            </select>
-
-            <button onclick="generatePrompt()" class="w-full px-5 py-3 rounded-2xl bg-indigo-700 hover:bg-indigo-600 font-bold">Generate Prompt</button>
-          </aside>
-
-          <section class="card p-5 lg:col-span-8">
-            <h2 class="text-xl font-black mb-4">Prompt Output</h2>
-            <div id="promptOutput" class="min-h-[190px] p-5 rounded-2xl bg-zinc-950 border border-zinc-800 font-serif text-xl">Generate a writing prompt from your saved words.</div>
-            <div class="flex flex-wrap gap-2 mt-3">
-              <button onclick="copyText('promptOutput')" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Copy Prompt</button>
-              <button onclick="exportPrompts()" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Export Prompts TXT</button>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <!-- REVIEW -->
-      <section id="review" class="tab-content hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-          <div>
-            <h2 class="text-2xl font-black">Review Sorter</h2>
-            <p class="text-sm text-zinc-500">Approve, reject, hold as maybe, or mark for review.</p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="exportReviewCSV()" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs">Export Review CSV</button>
-            <button onclick="clearReview()" class="px-3 py-2 rounded-xl bg-red-800 hover:bg-red-700 text-xs">Clear Review Lists</button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div class="card p-4"><h3 class="font-black text-emerald-400 mb-3">Approved <span id="countApproved" class="text-xs"></span></h3><div id="approvedList" class="space-y-2"></div></div>
-          <div class="card p-4"><h3 class="font-black text-amber-400 mb-3">Maybe <span id="countMaybe" class="text-xs"></span></h3><div id="maybeList" class="space-y-2"></div></div>
-          <div class="card p-4"><h3 class="font-black text-sky-400 mb-3">Needs Review <span id="countNeedsReview" class="text-xs"></span></h3><div id="needsReviewList" class="space-y-2"></div></div>
-          <div class="card p-4"><h3 class="font-black text-red-400 mb-3">Rejected <span id="countRejected" class="text-xs"></span></h3><div id="rejectedList" class="space-y-2"></div></div>
-        </div>
-      </section>
-
-      <!-- DATA -->
-      <section id="data" class="tab-content hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <section class="card p-5">
-            <h2 class="text-xl font-black mb-3">Offline JSON Loader</h2>
-            <p class="text-sm text-zinc-500 mb-4">Load a local <code>rhymes.json</code> made from CMUdict. Level 1 can then use offline perfect rhyme groups.</p>
-            <input id="offlineFile" type="file" accept=".json" class="block w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-indigo-700 file:text-white hover:file:bg-indigo-600" />
-            <button onclick="loadOfflineJSON()" class="mt-4 px-4 py-3 rounded-2xl bg-zinc-800 hover:bg-zinc-700 font-bold">Load Offline Data</button>
-            <div id="offlineStatus" class="mt-4 text-sm text-zinc-500">Offline data not loaded.</div>
-          </section>
-
-          <section class="card p-5">
-            <h2 class="text-xl font-black mb-3">Local Data Controls</h2>
-            <div class="space-y-2">
-              <button onclick="saveState(); toast('Saved.')" class="w-full px-4 py-3 rounded-2xl bg-emerald-800 hover:bg-emerald-700 font-bold">Save Now</button>
-              <button onclick="exportJSON()" class="w-full px-4 py-3 rounded-2xl bg-indigo-800 hover:bg-indigo-700 font-bold">Export Full JSON</button>
-              <button onclick="resetAll()" class="w-full px-4 py-3 rounded-2xl bg-red-900 hover:bg-red-800 font-bold">Reset Everything</button>
-            </div>
-            <div id="dataSummary" class="mt-4 p-4 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm text-zinc-500"></div>
-          </section>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 hidden px-4 py-3 rounded-2xl bg-zinc-800 border border-zinc-700 shadow-xl text-sm"></div>
+    <section class="card p-6 space-y-4">
+      <h2 class="text-xl font-bold">3. Review Not Deleted</h2>
+      <pre id="reviewText">Review lines will appear here.</pre>
+    </section>
+  </main>
 
   <script>
-    const STORE = "rhymeweave_v2_flow_checker";
-    const lists = ["approved", "maybe", "needsReview", "rejected"];
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    let finalOutput = "";
+    let azData = {};
+    let reviewLines = [];
 
-    let state = {
-      approved: [],
-      maybe: [],
-      needsReview: [],
-      rejected: [],
-      chain: [],
-      visible: [],
-      prompts: [],
-      offlineRhymes: null,
-      offlineEnabled: false,
-      lastAlliterationWords: [],
-      analyzerWords: []
-    };
-
-    const levelInfo = {
-      "1": { label: "Level 1 • Perfect", cls: "text-emerald-400", endpoint: "rel_rhy", help: "Exact/strong rhyme endings. Best for hooks, songs, clean poetry." },
-      "2": { label: "Level 2 • Family", cls: "text-amber-400", endpoint: "rel_nry", help: "Close partner rhymes. Best for flexible songwriting and lyric drafting." },
-      "3": { label: "Level 3 • Texture", cls: "text-sky-400", endpoint: "sl", help: "Sounds-like matches for assonance, consonance, and sonic texture." },
-      "4": { label: "Level 4 • Experimental", cls: "text-purple-400", endpoint: "rel_nry", help: "Loose near-rhymes and shifted sound candidates for experimental writing." }
-    };
-
-    function init() {
-      loadState();
-      createLetters();
-      updateLevelHelp();
-      renderAll();
-      document.getElementById("wordInput").addEventListener("keydown", e => { if (e.key === "Enter") searchRhymes(); });
-      document.getElementById("chainInput").addEventListener("keydown", e => { if (e.key === "Enter") addChainInput(); });
-      document.getElementById("writingText").addEventListener("input", debounce(analyzeWriting, 450));
+    function cleanLine(line) {
+      return line
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toUpperCase();
     }
 
-    function switchTab(id) {
-      document.querySelectorAll(".tab-content").forEach(x => x.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      document.querySelectorAll(".tab").forEach(x => x.classList.remove("tab-active"));
-      document.querySelector(`[data-tab="${id}"]`).classList.add("tab-active");
-      renderAll();
+    function isGoodLine(line) {
+      if (!line) return false;
+      if (line.split(" ").length < 2) return false;
+      if (/^\d+$/.test(line)) return false;
+      if (!/[A-Z]/.test(line)) return false;
+      return true;
     }
 
-    function createLetters() {
-      const box = document.getElementById("letters");
-      box.innerHTML = "";
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(letter => {
-        const b = document.createElement("button");
-        b.textContent = letter;
-        b.className = "px-3 py-1 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs";
-        b.onclick = () => searchLetter(letter);
-        box.appendChild(b);
-      });
-    }
+    function processText() {
+      const raw = document.getElementById("inputText").value;
+      const lines = raw.split(/\r?\n/).map(cleanLine);
 
-    function updateLevelHelp() {
-      const level = document.getElementById("levelSelect").value;
-      document.getElementById("levelHelp").textContent = levelInfo[level].help;
-    }
+      azData = {};
+      reviewLines = [];
+      letters.forEach(l => azData[l] = []);
 
-    async function searchRhymes() {
-      const word = document.getElementById("wordInput").value.trim().toLowerCase();
-      const level = document.getElementById("levelSelect").value;
-      if (!word) return toast("Type a word first.");
+      const seen = new Set();
+      let duplicateCount = 0;
 
-      setResultsLoading(`Finding ${levelInfo[level].label} matches for "${word}"...`);
+      for (const line of lines) {
+        if (!isGoodLine(line)) {
+          if (line) reviewLines.push(line);
+          continue;
+        }
 
-      try {
-        let data = [];
-        if (state.offlineEnabled && state.offlineRhymes && level === "1") {
-          data = offlineRhymesFor(word).map(w => ({ word: w }));
+        if (seen.has(line)) {
+          duplicateCount++;
+          continue;
+        }
+
+        seen.add(line);
+
+        const first = line[0];
+        if (azData[first]) {
+          azData[first].push(line);
         } else {
-          const ep = levelInfo[level].endpoint;
-          const url = `https://api.datamuse.com/words?${ep}=${encodeURIComponent(word)}&max=100&md=s`;
-          const res = await fetch(url);
-          if (!res.ok) throw new Error("API error " + res.status);
-          data = await res.json();
+          reviewLines.push(line);
         }
-
-        state.visible = data
-          .filter(x => x.word && x.word.toLowerCase() !== word)
-          .map(x => ({
-            word: x.word,
-            type: "rhyme",
-            context: word,
-            level,
-            levelLabel: levelInfo[level].label,
-            syllables: x.numSyllables || "",
-            score: x.score || ""
-          }));
-
-        displayVisible(`${state.visible.length} matches`, `${levelInfo[level].label} for "${word}"`);
-      } catch (err) {
-        document.getElementById("results").innerHTML = `<div class="text-red-400 p-4">Could not load results: ${esc(err.message)}</div>`;
       }
-    }
 
-    async function searchLetter(letter) {
-      setResultsLoading(`Loading ${letter} words...`);
-      try {
-        const url = `https://api.datamuse.com/words?sp=${encodeURIComponent(letter.toLowerCase() + "*")}&max=100&md=s`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("API error " + res.status);
-        const data = await res.json();
-        state.visible = data.map(x => ({
-          word: x.word,
-          type: "letter",
-          context: letter,
-          level: "",
-          levelLabel: "Letter Browse",
-          syllables: x.numSyllables || "",
-          score: x.score || ""
-        }));
-        displayVisible(`${state.visible.length} words`, `Browse by letter: ${letter}`);
-      } catch (err) {
-        document.getElementById("results").innerHTML = `<div class="text-red-400 p-4">Could not load letter results: ${esc(err.message)}</div>`;
+      letters.forEach(l => azData[l].sort());
+
+      finalOutput = "";
+      for (const l of letters) {
+        if (azData[l].length) {
+          finalOutput += `\n===== ${l} =====\n`;
+          finalOutput += azData[l].join("\n") + "\n";
+        }
       }
+
+      document.getElementById("outputText").textContent = finalOutput.trim() || "No clean lines found.";
+      document.getElementById("reviewText").textContent = reviewLines.join("\n") || "No review lines.";
+      document.getElementById("keptCount").textContent = seen.size;
+      document.getElementById("dupCount").textContent = duplicateCount;
+      document.getElementById("reviewCount").textContent = reviewLines.length;
+
+      buildLetterButtons();
     }
 
-    async function searchLetterAndRhyme() {
-      const letter = prompt("Starting letter? Example: B");
-      if (!letter || !/^[a-zA-Z]$/.test(letter.trim())) return toast("Enter one letter.");
-      await searchRhymes();
-      const l = letter.trim().toLowerCase();
-      state.visible = state.visible.filter(x => x.word.toLowerCase().startsWith(l));
-      displayVisible(`${state.visible.length} matches`, `Filtered by starting letter ${l.toUpperCase()}`);
-    }
-
-    function setResultsLoading(text) {
-      document.getElementById("results").innerHTML = `<div class="p-4 text-zinc-500 text-center">${esc(text)}</div>`;
-      document.getElementById("resultInfo").textContent = text;
-      document.getElementById("resultCount").textContent = "";
-    }
-
-    function displayVisible(count, info) {
-      const box = document.getElementById("results");
-      document.getElementById("resultCount").textContent = count;
-      document.getElementById("resultInfo").textContent = info;
+    function buildLetterButtons() {
+      const box = document.getElementById("letterButtons");
       box.innerHTML = "";
-
-      if (!state.visible.length) {
-        box.innerHTML = `<div class="p-4 text-zinc-500">No matches found.</div>`;
-        return;
-      }
-
-      state.visible.forEach(item => box.appendChild(wordCard(item)));
-      saveState();
-    }
-
-    function wordCard(item) {
-      const div = document.createElement("div");
-      const level = item.level || "";
-      const badge = level ? `<span class="${levelInfo[level].cls} text-xs">${esc(item.levelLabel)}</span>` : `<span class="text-zinc-500 text-xs">Letter Browse</span>`;
-      div.className = "word-card p-4 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3";
-      div.innerHTML = `
-        <div>
-          <div class="flex flex-wrap gap-2 items-center">
-            <span class="font-black text-lg">${esc(item.word)}</span>
-            ${badge}
-            ${item.syllables ? `<span class="text-xs text-zinc-500">${esc(item.syllables)} syl</span>` : ""}
-            ${item.score ? `<span class="text-xs text-zinc-500">score ${esc(item.score)}</span>` : ""}
-          </div>
-          <div class="text-xs text-zinc-600 mt-1">${esc(item.context || "")}</div>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button data-status="approved" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-xs">Approve</button>
-          <button data-status="maybe" class="px-3 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-600 text-xs">Maybe</button>
-          <button data-status="needsReview" class="px-3 py-1.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-xs">Review</button>
-          <button data-status="rejected" class="px-3 py-1.5 rounded-xl bg-red-700 hover:bg-red-600 text-xs">Reject</button>
-          <button data-chain class="px-3 py-1.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-xs">Chain</button>
-        </div>
-      `;
-      div.querySelectorAll("[data-status]").forEach(b => b.onclick = () => { moveWord(item.word, b.dataset.status); div.remove(); });
-      div.querySelector("[data-chain]").onclick = () => addChain(item.word);
-      return div;
-    }
-
-    function moveWord(word, status) {
-      lists.forEach(k => state[k] = state[k].filter(w => w !== word));
-      state[status].push(word);
-      state[status] = unique(state[status]).sort();
-      saveState();
-      renderAll();
-      toast(`${word} → ${labelStatus(status)}`);
-    }
-
-    function sendVisibleToReview() {
-      state.visible.forEach(x => {
-        if (!lists.some(k => state[k].includes(x.word))) state.needsReview.push(x.word);
-      });
-      state.needsReview = unique(state.needsReview).sort();
-      saveState();
-      renderAll();
-      toast("Visible results sent to Needs Review.");
-    }
-
-    function clearResults() {
-      state.visible = [];
-      document.getElementById("results").innerHTML = "";
-      document.getElementById("resultCount").textContent = "";
-      document.getElementById("resultInfo").textContent = "Search rhymes or browse by letter.";
-      saveState();
-    }
-
-    function addChain(word) {
-      if (!state.chain.includes(word)) state.chain.push(word);
-      saveState();
-      renderAll();
-      toast(`${word} added to chain.`);
-    }
-
-    function addChainInput() {
-      const input = document.getElementById("chainInput");
-      const word = input.value.trim().toLowerCase();
-      if (!word) return;
-      addChain(word);
-      input.value = "";
-    }
-
-    function renderChain() {
-      const box = document.getElementById("chainWords");
-      box.innerHTML = "";
-      if (!state.chain.length) {
-        box.innerHTML = `<span class="text-xs text-zinc-600">No chain words yet.</span>`;
-        return;
-      }
-      state.chain.forEach((word, i) => {
-        const tag = document.createElement("span");
-        tag.className = "px-3 py-1.5 rounded-2xl bg-zinc-800 text-sm flex gap-2 items-center";
-        tag.innerHTML = `${esc(word)} <button class="text-red-400">×</button>`;
-        tag.querySelector("button").onclick = () => { state.chain.splice(i, 1); saveState(); renderAll(); };
-        box.appendChild(tag);
-      });
-    }
-
-    function loadListIntoChain(listName) {
-      state[listName].forEach(w => { if (!state.chain.includes(w)) state.chain.push(w); });
-      saveState(); renderAll(); toast(`${labelStatus(listName)} loaded into chain.`);
-    }
-
-    function loadVisibleIntoChain() {
-      state.visible.forEach(x => { if (!state.chain.includes(x.word)) state.chain.push(x.word); });
-      saveState(); renderAll(); toast("Visible words loaded into chain.");
-    }
-
-    function shuffleChain() {
-      state.chain = shuffle(state.chain);
-      saveState(); renderAll();
-    }
-
-    function clearChain() {
-      state.chain = [];
-      saveState(); renderAll();
-    }
-
-    function generateChain() {
-      const out = document.getElementById("chainOutput");
-      const style = document.getElementById("chainStyle").value;
-      const w = state.chain.slice(0, 12);
-      if (!w.length) { out.textContent = "Add words first."; return; }
-
-      let line = "";
-      if (style === "linked") line = w.join(" • ");
-      if (style === "poetic") line = `${cap(w[0])} ${w[1] || "breath"} carries ${w[2] || "light"} through ${w[3] || "silence"}.`;
-      if (style === "cinematic") line = `${cap(w[0])} ${w[1] || "fire"} breaks across the ${w[2] || "horizon"} while ${w[3] || "shadows"} rise.`;
-      if (style === "mythic") line = `${cap(w[0])} ${w[1] || "crown"} blesses the ${w[2] || "gate"} of ${w[3] || "dawn"}.`;
-      if (style === "rap") line = `${cap(w[0])} with the ${w[1] || "flow"}, ${w[2] || "glow"} when I ${w[3] || "go"}.`;
-
-      out.innerHTML = `<span class="text-emerald-300">"${esc(line)}"</span>`;
-    }
-
-    async function generateAlliteration() {
-      const letter = (document.getElementById("allitLetter").value || "B").trim()[0].toUpperCase();
-      const style = document.getElementById("allitStyle").value;
-      const out = document.getElementById("allitOutput");
-      if (!/^[A-Z]$/.test(letter)) return out.textContent = "Use one A–Z letter.";
-      out.textContent = "Generating...";
-
-      try {
-        const res = await fetch(`https://api.datamuse.com/words?sp=${encodeURIComponent(letter.toLowerCase() + "*")}&max=20&md=s`);
-        if (!res.ok) throw new Error("API error");
-        const data = await res.json();
-        const words = data.map(x => x.word).filter(w => /^[a-zA-Z-]+$/.test(w)).slice(0, 10);
-        const chosen = shuffle(words).slice(0, 5);
-        state.lastAlliterationWords = chosen;
-
-        const [a,b,c,d,e] = chosen;
-        const templates = {
-          smooth: `${cap(a)} ${b} ${c} beneath ${d || b} skies.`,
-          cinematic: `${cap(a)} ${b} breaks beyond the ${c} horizon.`,
-          mythic: `${cap(a)} ${b} blesses the ${c} crown of ${d || "dawn"}.`,
-          nature: `${cap(a)} ${b} blooms beside ${c} and ${d || "breeze"}.`,
-          song: `${cap(a)} ${b}, ${c} in my ${d || "dream"}, ${e || "again"}.`
+      for (const l of letters) {
+        const btn = document.createElement("button");
+        btn.className = "secondary";
+        btn.textContent = `${l} (${azData[l]?.length || 0})`;
+        btn.onclick = () => {
+          document.getElementById("outputText").textContent =
+            azData[l]?.length ? `===== ${l} =====\n` + azData[l].join("\n") : `No ${l} lines found.`;
         };
-
-        out.innerHTML = `<div class="text-violet-300">"${esc(templates[style])}"</div><div class="text-xs text-zinc-500 mt-2">${chosen.map(esc).join(", ")}</div>`;
-        saveState();
-      } catch {
-        out.textContent = "Could not generate line.";
+        box.appendChild(btn);
       }
-    }
 
-    function sendAlliterationWordsToReview() {
-      state.lastAlliterationWords.forEach(w => {
-        if (!lists.some(k => state[k].includes(w))) state.needsReview.push(w);
-      });
-      state.needsReview = unique(state.needsReview).sort();
-      saveState(); renderAll(); toast("Alliteration words sent to review.");
-    }
-
-    function generatePrompt() {
-      const type = document.getElementById("promptType").value;
-      const source = document.getElementById("promptSource").value;
-      const words = getSourceWords(source).slice(0, 10);
-      const out = document.getElementById("promptOutput");
-      if (!words.length) { out.textContent = "No words available in that source."; return; }
-
-      const joined = words.join(", ");
-      const templates = {
-        cinematic: `Write a cinematic line using these words: ${joined}. Make it visual, sharp, and flowing.`,
-        song: `Write a memorable song hook using these words: ${joined}. Keep the rhyme and rhythm tight.`,
-        poem: `Write a poetic line using these words: ${joined}. Focus on sound, breath, and image.`,
-        mythic: `Write a mythic scene using these words: ${joined}. Make it feel ancient, powerful, and symbolic.`,
-        rap: `Write a rap bar using these words: ${joined}. Use punch, internal rhyme, and flow.`,
-        chain: `Build a phrase chain from these words: ${joined}. Each word should lead naturally into the next.`
+      const allBtn = document.createElement("button");
+      allBtn.textContent = "SHOW ALL";
+      allBtn.onclick = () => {
+        document.getElementById("outputText").textContent = finalOutput.trim() || "No clean lines found.";
       };
-
-      const prompt = templates[type];
-      state.prompts.push({ createdAt: new Date().toISOString(), type, source, words, prompt });
-      out.innerHTML = `<div class="text-indigo-300">${esc(prompt)}</div>`;
-      saveState();
+      box.appendChild(allBtn);
     }
 
-    function getSourceWords(source) {
-      if (source === "chain") return state.chain;
-      if (source === "visible") return state.visible.map(x => x.word);
-      return state[source] || [];
+    function clearAll() {
+      document.getElementById("inputText").value = "";
+      document.getElementById("outputText").textContent = "Your cleaned A-Z output will appear here.";
+      document.getElementById("reviewText").textContent = "Review lines will appear here.";
+      document.getElementById("keptCount").textContent = "0";
+      document.getElementById("dupCount").textContent = "0";
+      document.getElementById("reviewCount").textContent = "0";
+      document.getElementById("letterButtons").innerHTML = "";
+      finalOutput = "";
+      azData = {};
+      reviewLines = [];
     }
 
-    function analyzeWriting() {
-      const text = document.getElementById("writingText").value;
-      const output = document.getElementById("highlightedOutput");
-      const summary = document.getElementById("analysisSummary");
-      const words = extractWords(text);
-      state.analyzerWords = words;
-
-      if (!words.length) {
-        output.textContent = "Your highlighted text appears here.";
-        summary.innerHTML = "";
+    function downloadTxt() {
+      const text = finalOutput.trim();
+      if (!text) {
+        alert("Run Clean + Sort A-Z first.");
         return;
       }
 
-      const groups = groupBy(words, w => w[0]);
-      const strongLetters = Object.keys(groups).filter(k => groups[k].length >= 2).sort();
-      const endings = groupBy(words, w => endingKey(w));
-      const strongEndings = Object.keys(endings).filter(k => endings[k].length >= 2 && k.length >= 2).sort();
-
-      let highlighted = esc(text);
-      strongLetters.forEach(letter => {
-        const regex = new RegExp(`\\b(${groups[letter].map(escapeRegex).join("|")})\\b`, "gi");
-        highlighted = highlighted.replace(regex, `<mark class="allit">$1</mark>`);
-      });
-
-      output.innerHTML = highlighted;
-
-      summary.innerHTML = `
-        <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800">
-          <div class="font-black text-violet-300 mb-2">Alliteration Groups</div>
-          ${strongLetters.length ? strongLetters.map(l => `<div class="text-sm"><b>${l.toUpperCase()}</b>: ${unique(groups[l]).slice(0, 18).map(esc).join(", ")}</div>`).join("") : `<div class="text-sm text-zinc-500">No strong groups yet.</div>`}
-        </div>
-        <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800">
-          <div class="font-black text-emerald-300 mb-2">Rhyme-like Endings</div>
-          ${strongEndings.length ? strongEndings.map(e => `<div class="text-sm"><b>-${esc(e)}</b>: ${unique(endings[e]).slice(0, 18).map(esc).join(", ")}</div>`).join("") : `<div class="text-sm text-zinc-500">No repeated endings yet.</div>`}
-        </div>
-      `;
-      saveState();
-    }
-
-    function sortTextAZ() {
-      const words = unique(extractWords(document.getElementById("writingText").value)).sort();
-      document.getElementById("highlightedOutput").innerHTML = words.length ? words.map(esc).join("<br>") : "No words to sort.";
-    }
-
-    function extractAlliterationWords() {
-      const words = extractWords(document.getElementById("writingText").value);
-      const groups = groupBy(words, w => w[0]);
-      const lines = Object.keys(groups).sort().filter(k => groups[k].length >= 2).map(k => `${k.toUpperCase()}: ${unique(groups[k]).sort().join(", ")}`);
-      document.getElementById("highlightedOutput").textContent = lines.length ? lines.join("\n") : "No alliteration groups found.";
-    }
-
-    function sendAnalyzerWordsToReview() {
-      const words = unique(state.analyzerWords || extractWords(document.getElementById("writingText").value));
-      words.forEach(w => {
-        if (!lists.some(k => state[k].includes(w))) state.needsReview.push(w);
-      });
-      state.needsReview = unique(state.needsReview).sort();
-      saveState(); renderAll(); toast("Analyzer words sent to review.");
-    }
-
-    function renderReview() {
-      renderList("approved", "approvedList", "countApproved");
-      renderList("maybe", "maybeList", "countMaybe");
-      renderList("needsReview", "needsReviewList", "countNeedsReview");
-      renderList("rejected", "rejectedList", "countRejected");
-    }
-
-    function renderList(status, id, countId) {
-      const box = document.getElementById(id);
-      box.innerHTML = "";
-      document.getElementById(countId).textContent = `(${state[status].length})`;
-      if (!state[status].length) {
-        box.innerHTML = `<p class="text-xs text-zinc-600">Empty</p>`;
-        return;
-      }
-      state[status].forEach(word => {
-        const div = document.createElement("div");
-        div.className = "p-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm";
-        div.innerHTML = `
-          <div class="flex justify-between gap-2"><b>${esc(word)}</b><button class="text-red-400" data-remove>×</button></div>
-          <div class="flex flex-wrap gap-1 mt-2">
-            <button data-move="approved" class="px-2 py-1 rounded-lg bg-emerald-900 text-[10px]">Approved</button>
-            <button data-move="maybe" class="px-2 py-1 rounded-lg bg-amber-900 text-[10px]">Maybe</button>
-            <button data-move="needsReview" class="px-2 py-1 rounded-lg bg-sky-900 text-[10px]">Review</button>
-            <button data-move="rejected" class="px-2 py-1 rounded-lg bg-red-900 text-[10px]">Reject</button>
-            <button data-chain class="px-2 py-1 rounded-lg bg-blue-900 text-[10px]">Chain</button>
-          </div>
-        `;
-        div.querySelector("[data-remove]").onclick = () => { state[status] = state[status].filter(w => w !== word); saveState(); renderAll(); };
-        div.querySelectorAll("[data-move]").forEach(b => b.onclick = () => moveWord(word, b.dataset.move));
-        div.querySelector("[data-chain]").onclick = () => addChain(word);
-        box.appendChild(div);
-      });
-    }
-
-    function renderStats() {
-      document.getElementById("statApproved").textContent = state.approved.length;
-      document.getElementById("statMaybe").textContent = state.maybe.length;
-      document.getElementById("statReview").textContent = state.needsReview.length;
-      document.getElementById("statRejected").textContent = state.rejected.length;
-      document.getElementById("statChain").textContent = state.chain.length;
-      document.getElementById("dataSummary").textContent =
-        `Approved ${state.approved.length}, Maybe ${state.maybe.length}, Needs Review ${state.needsReview.length}, Rejected ${state.rejected.length}, Chain ${state.chain.length}, Prompts ${state.prompts.length}.`;
-    }
-
-    function renderAll() {
-      renderStats();
-      renderReview();
-      renderChain();
-    }
-
-    function loadOfflineJSON() {
-      const file = document.getElementById("offlineFile").files[0];
-      if (!file) return toast("Choose a JSON file first.");
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          state.offlineRhymes = JSON.parse(e.target.result);
-          state.offlineEnabled = true;
-          document.getElementById("offlineStatus").textContent = `Offline data loaded: ${Object.keys(state.offlineRhymes).length.toLocaleString()} rhyme groups.`;
-          saveState(false);
-          toast("Offline rhymes loaded.");
-        } catch {
-          toast("Invalid JSON.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function offlineRhymesFor(word) {
-      if (!state.offlineRhymes) return [];
-      for (const key of Object.keys(state.offlineRhymes)) {
-        const arr = state.offlineRhymes[key];
-        if (Array.isArray(arr) && arr.includes(word)) return arr.filter(w => w !== word);
-      }
-      return [];
-    }
-
-    function clearReview() {
-      if (!confirm("Clear all review lists?")) return;
-      lists.forEach(k => state[k] = []);
-      saveState(); renderAll();
-    }
-
-    function resetAll() {
-      if (!confirm("Reset everything saved in this browser?")) return;
-      localStorage.removeItem(STORE);
-      location.reload();
-    }
-
-    function saveState(includeOffline = true) {
-      const copy = { ...state };
-      if (!includeOffline) copy.offlineRhymes = state.offlineRhymes;
-      localStorage.setItem(STORE, JSON.stringify(copy));
-    }
-
-    function loadState() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORE) || "null");
-        if (saved) state = { ...state, ...saved };
-      } catch {}
-    }
-
-    function exportReviewCSV() {
-      const rows = [["word","status"]];
-      lists.forEach(k => state[k].forEach(w => rows.push([w, k])));
-      download("rhymeweave_review.csv", csv(rows), "text/csv");
-    }
-
-    function exportVisibleCSV() {
-      const rows = [["word","type","context","level","syllables","score"]];
-      state.visible.forEach(x => rows.push([x.word, x.type, x.context, x.levelLabel, x.syllables, x.score]));
-      download("rhymeweave_visible_results.csv", csv(rows), "text/csv");
-    }
-
-    function exportPrompts() {
-      const text = state.prompts.length ? state.prompts.map((p,i) => `${i+1}. ${p.prompt}`).join("\n\n") : "No prompts yet.";
-      download("rhymeweave_prompts.txt", text, "text/plain");
-    }
-
-    function exportJSON() {
-      const copy = { ...state, offlineRhymes: state.offlineRhymes ? "[offline data loaded]" : null, exportedAt: new Date().toISOString() };
-      download("rhymeweave_v2_data.json", JSON.stringify(copy, null, 2), "application/json");
-    }
-
-    function download(name, content, type) {
-      const blob = new Blob([content], { type });
+      const blob = new Blob([text], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = name; a.click();
+      a.href = url;
+      a.download = "RHYMEWEAVE_AZ_CLEAN_OUTPUT.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
 
-    function copyText(id) {
-      const text = document.getElementById(id).innerText || "";
-      navigator.clipboard.writeText(text.trim()).then(() => toast("Copied."));
-    }
-
-    function toast(msg) {
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.classList.remove("hidden");
-      setTimeout(() => t.classList.add("hidden"), 1800);
-    }
-
-    function extractWords(text) {
-      return (text.toLowerCase().match(/\b[a-z][a-z'-]{1,}\b/g) || []).map(w => w.replace(/^'+|'+$/g, ""));
-    }
-
-    function groupBy(arr, fn) {
-      return arr.reduce((m, x) => {
-        const k = fn(x);
-        if (!m[k]) m[k] = [];
-        m[k].push(x);
-        return m;
-      }, {});
-    }
-
-    function endingKey(word) {
-      if (word.length <= 3) return word;
-      return word.slice(-3);
-    }
-
-    function csv(rows) {
-      return rows.map(r => r.map(v => `\"${String(v ?? "").replaceAll('\"','\"\"')}\"`).join(",")).join("\n");
-    }
-
-    function unique(arr) { return [...new Set(arr.filter(Boolean))]; }
-    function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-    function cap(s) { return s ? s[0].toUpperCase() + s.slice(1) : ""; }
-    function esc(s) { return String(s ?? "").replace(/[&<>\"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '\"':"&quot;", "'":"&#039;" }[c])); }
-    function escapeRegex(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-    function labelStatus(s) { return ({ approved:"Approved", maybe:"Maybe", needsReview:"Needs Review", rejected:"Rejected" }[s] || s); }
-    function debounce(fn, delay) {
-      let timer;
-      return function() {
-        clearTimeout(timer);
-        timer = setTimeout(fn, delay);
-      };
-    }
-
-    window.onload = init;
+    buildLetterButtons();
   </script>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js").catch(err => {
-        console.log("Service worker registration failed:", err);
-      });
-    });
-  }
-</script>
-
 </body>
 </html>
