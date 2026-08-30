@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#061615">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <title>RhymeWeaver — Living Library of Language</title>
 <style>
 :root{--ink:#020807;--deep:#061615;--panel:rgba(5,25,23,.82);--teal:#28e0d1;--teal2:#0b8f88;--gold:#e7bd73;--gold2:#8f632d;--text:#f4ead7;--muted:#9fb6b1;--line:rgba(231,189,115,.36)}
@@ -32,6 +34,7 @@ button,input,textarea,select{font:inherit}.hidden{display:none!important}
 .card{background:linear-gradient(145deg,rgba(10,37,34,.93),rgba(2,14,13,.95));border:1px solid var(--line);border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 18px 42px rgba(0,0,0,.25)}
 .card h2,.card h3{font-family:Georgia,"Times New Roman",serif;color:#f0cc8c}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 input,textarea,select{width:100%;border:1px solid rgba(159,182,177,.32);border-radius:12px;background:#020908;color:var(--text);padding:12px;margin:6px 0 10px}textarea{min-height:150px;resize:vertical}.action{margin:4px 6px 4px 0;background:linear-gradient(180deg,#d4a75f,#7e5528);color:#110b04;border-color:#efce91}.out{white-space:pre-wrap;background:#010706;border:1px solid rgba(40,224,209,.2);border-radius:13px;padding:14px;min-height:100px;max-height:430px;overflow:auto;color:#dce9e5}.status{color:var(--teal);margin-top:8px}.az button{width:44px;height:40px;margin:4px;border-radius:10px;border:1px solid var(--line);background:#071d1b;color:var(--gold);cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed} .grid>*{min-width:0} .out{overflow-wrap:anywhere}
 .placeholder{padding:30px;text-align:center;border:1px dashed rgba(40,224,209,.34);border-radius:18px;color:var(--muted)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media(max-width:720px){.hero{justify-content:flex-start;padding-top:72px}.portal-grid{grid-template-columns:1fr}.portal.search{grid-column:auto}.brand{font-size:clamp(3rem,18vw,5.4rem);line-height:.9}.tagline{letter-spacing:.05em}.tagline:before,.tagline:after{margin:0 6px}.portal{min-height:132px;padding:20px}}
@@ -42,15 +45,16 @@ input,textarea,select{width:100%;border:1px solid rgba(159,182,177,.32);border-r
 <section id="home" class="hero">
 <h1 class="brand">Rhyme<br>Weaver</h1>
 <div class="tagline">Living Library of Language</div>
-<p class="intro">A living creative archive for rhymes, alliterations, roots, references, images, memes, prompts, stories, notes, and evolving knowledge.</p>
+<p class="intro">Working tools for rhyme lookup, writing prompts, and safe three-word A–Z sorting. Reference, archive, search, and meme tools are planned.</p>
 <div class="portal-grid">
 <button class="portal" onclick="openWing('language')"><span class="portal-icon">Aa</span><h2>Language Wing</h2><p>Rhymes • Alliterations • Roots • Phrase chains • Writing prompts</p></button>
 <button class="portal" onclick="openWing('creative')"><span class="portal-icon">✦</span><h2>Creative Studio</h2><p>Images • Memes • Prompt forge • Stories • Finished output</p></button>
-<button class="portal" onclick="openWing('reference')"><span class="portal-icon">⌘</span><h2>Reference Library</h2><p>Dictionaries • Black’s Law • Etymology • Books • Source notes</p></button>
-<button class="portal" onclick="openWing('archive')"><span class="portal-icon">◇</span><h2>Archive Vault</h2><p>Projects • Images • Notes • Uploaded files • Saved discoveries</p></button>
-<button class="portal search" onclick="openWing('search')"><span class="portal-icon">◎</span><span><h2>Universal Knowledge Search</h2><p>Search once across every connected wing of the library.</p></span></button>
+<button class="portal" onclick="openWing('reference')"><span class="portal-icon">⌘</span><h2>Reference Library — planned</h2><p>Dictionaries • Black’s Law • Etymology • Books • Source notes</p></button>
+<button class="portal" onclick="openWing('archive')"><span class="portal-icon">◇</span><h2>Archive Vault — planned</h2><p>Projects • Images • Notes • Uploaded files • Saved discoveries</p></button>
+<button class="portal search" onclick="openWing('search')"><span class="portal-icon">◎</span><span><h2>Universal Knowledge Search — planned</h2><p>Search once across every connected wing of the library.</p></span></button>
 </div>
-<div class="enter-note">Tap any illuminated chamber to enter.</div>
+<div class="enter-note">Start with Creative Studio → Review Sorter. Download results before closing.
+<div id="offlineStatus" role="status">Local file: sorting works without an installation. Hosted offline setup is checked when opened.</div></div>
 </section>
 <section id="workspace" class="workspace hidden">
 <div class="topbar"><button class="home-btn" onclick="goHome()">← Grand Hall</button><div id="crumb" style="color:var(--gold);font-family:Georgia,serif">RhymeWeaver</div></div>
@@ -65,14 +69,27 @@ input,textarea,select{width:100%;border:1px solid rgba(159,182,177,.32);border-r
 <div id="analyzer" class="tool hidden"><div class="card"><h2>Text Analyzer</h2><textarea id="analyzeInput" placeholder="Paste a poem, phrase, or paragraph..."></textarea><button class="action" onclick="analyzeText()">Analyze</button><div id="analyzeOut" class="out"></div></div></div>
 </div>
 <div id="creativeWing" class="wing hidden">
-<div class="tabs"><button class="nav-btn active" onclick="showCreative('imagePrompts',this)">Image Prompt Forge</button><button class="nav-btn" onclick="showCreative('review',this)">Review Sorter</button><button class="nav-btn" onclick="showCreative('meme',this)">Alliteration Meme Studio</button></div>
+<div class="tabs"><button class="nav-btn active" onclick="showCreative('imagePrompts',this)">Image Prompt Forge</button><button class="nav-btn" onclick="showCreative('review',this)">Review Sorter</button><button class="nav-btn" onclick="showCreative('meme',this)">Alliteration Meme Studio — planned</button></div>
 <div id="imagePrompts" class="creativeTool"><div class="card"><h2>AI Image Prompt Forge</h2><p>Turn a rhyme, alliteration, poem, or theme into a polished image direction.</p><textarea id="pmTheme" placeholder="COSMIC CURRENT CARRIES COINS"></textarea><select id="pmStyle"><option value="hyperdynamic">Hyper-Dynamic 8K</option><option value="cosmic">Cosmic Archive Pipeline</option><option value="lexicon">Living Lexicon Codex</option><option value="rhymewriter">Rhyme Writer Vision</option><option value="fantasy">Fantasy Ethereal Realm</option><option value="gothic">Dark Gothic</option></select><button class="action" onclick="runImagePrompt()">Generate Prompt</button><button class="action" onclick="copyPositivePrompt()">Copy Positive</button><button class="action" onclick="downloadImagePrompt()">Download TXT</button><h3>Positive Prompt</h3><textarea id="pmPositive" readonly></textarea><h3>Negative Prompt</h3><textarea id="pmNegative" readonly></textarea></div></div>
-<div id="review" class="creativeTool hidden"><div class="card"><h2>Review Sorter</h2><textarea id="reviewInput" placeholder="Paste lines here..."></textarea><button class="action" onclick="sortReview()">Sort Review</button><div class="grid"><div><h3>Approved</h3><div id="approvedOut" class="out"></div></div><div><h3>Needs Review</h3><div id="reviewOut" class="out"></div></div></div></div></div>
-<div id="meme" class="creativeTool hidden"><div class="card"><h2>Alliteration Meme Studio</h2><div class="placeholder">The clickable studio chamber is ready. The next build connects templates, exact text placement, and export.</div></div></div>
+<div id="review" class="creativeTool hidden"><div class="card">
+<h2>Three-word A–Z Review Sorter</h2>
+<p>Paste text or choose one UTF-8 .txt file. Keeps lines with at least three words, removes punctuation, uppercases, deduplicates this batch, and sorts A–Z. This does not grade alliteration or update a master archive.</p>
+<label for="reviewFile">Choose one text file</label><input id="reviewFile" type="file" accept=".txt,text/plain" onchange="loadReviewFile()">
+<label for="reviewInput">Original text (never edited by sorting)</label><textarea id="reviewInput" placeholder="Paste lines here..." oninput="reviewSource='Pasted or edited text';invalidateReview()"></textarea>
+<button id="sortButton" class="action" onclick="sortReview()">Clean · Sort A–Z</button>
+<p id="reviewStatus" class="status" role="status">Ready. No database needed. Nothing is saved automatically.</p>
+<button class="action reviewExport" disabled onclick="exportReview('clean')">Download clean A–Z</button>
+<button class="action reviewExport" disabled onclick="exportReview('review')">Download review — not deleted</button>
+<button class="action reviewExport" disabled onclick="exportReview('duplicates')">Download duplicates</button>
+<button class="action reviewExport" disabled onclick="exportReview('original')">Download source text copy</button>
+<button class="action reviewExport" disabled onclick="exportReview('log')">Download process log</button>
+<div class="grid"><div><h3>Clean candidates — 3+ words</h3><div id="approvedOut" class="out"></div></div><div><h3>Review — original lines with reasons</h3><div id="reviewOut" class="out"></div></div></div>
+</div></div>
+<div id="meme" class="creativeTool hidden"><div class="card"><h2>Alliteration Meme Studio — planned</h2><div class="placeholder">The clickable studio chamber is ready. The next build connects templates, exact text placement, and export.</div></div></div>
 </div>
-<div id="referenceWing" class="wing hidden"><div class="card"><h2>Reference Library</h2><div class="placeholder">Future shelves: dictionaries, Black’s Law, etymology, source books, citations, and searchable excerpts.</div></div></div>
-<div id="archiveWing" class="wing hidden"><div class="card"><h2>Archive Vault</h2><div class="placeholder">Future vault: projects, images, prompts, notes, books, uploads, favorites, and version history.</div></div></div>
-<div id="searchWing" class="wing hidden"><div class="card"><h2>Universal Knowledge Search</h2><input placeholder="Search every wing of RhymeWeaver"><button class="action">Search Library</button><div class="placeholder">The universal index will connect once the reference and archive collections are loaded.</div></div></div>
+<div id="referenceWing" class="wing hidden"><div class="card"><h2>Reference Library — planned</h2><div class="placeholder">Future shelves: dictionaries, Black’s Law, etymology, source books, citations, and searchable excerpts.</div></div></div>
+<div id="archiveWing" class="wing hidden"><div class="card"><h2>Archive Vault — planned</h2><div class="placeholder">Future vault: projects, images, prompts, notes, books, uploads, favorites, and version history.</div></div></div>
+<div id="searchWing" class="wing hidden"><div class="card"><h2>Universal Knowledge Search — planned</h2><input disabled aria-label="Search is not available yet" placeholder="Search is not available yet"><button class="action" disabled>Search — not available yet</button><div class="placeholder">The universal index will connect once the reference and archive collections are loaded.</div></div></div>
 </section>
 </main>
 <script>
@@ -94,12 +111,70 @@ function makePrompt(){if(!needDB())return;const l=(document.getElementById('prom
 const PROMPT_STYLES={hyperdynamic:'8K, ultra-detailed, cinematic lighting, volumetric depth, sharp focus, premium composition',cosmic:'cosmic archive, glowing teal plasma, gold sacred technology, galactic library, deep black atmosphere, 8K',lexicon:'living lexicon codex, illuminated dictionary, gold ink, teal energy, ancient cosmic parchment, hyper-detailed',rhymewriter:'poetic sound waves becoming imagery, glowing syllables, phonetic light, lyrical atmosphere, cinematic detail',fantasy:'ethereal fantasy realm, magical particles, luminous mist, epic scale, painterly detail',gothic:'dark gothic architecture, gold ornament, teal firelight, dramatic chiaroscuro, atmospheric detail'};
 const NEGATIVE_PROMPT='blurry, low quality, deformed, unreadable text, misspelled words, watermark, flat lighting, cluttered layout, JPEG artifacts';
 function runImagePrompt(){const theme=document.getElementById('pmTheme').value.trim();if(!theme){alert('Enter an idea first.');return}const style=PROMPT_STYLES[document.getElementById('pmStyle').value]||PROMPT_STYLES.hyperdynamic;document.getElementById('pmPositive').value=theme+', '+style+', masterpiece, high contrast, polished final output';document.getElementById('pmNegative').value=NEGATIVE_PROMPT}
-function copyPositivePrompt(){const t=document.getElementById('pmPositive').value;if(!t){alert('Generate a prompt first.');return}navigator.clipboard.writeText(t).then(()=>alert('Prompt copied.')).catch(()=>alert('Select the text and copy manually.'))}
+function copyPositivePrompt(){const t=document.getElementById('pmPositive').value;if(!t){alert('Generate a prompt first.');return}if(!navigator.clipboard){document.getElementById('pmPositive').select();alert('Text selected. Press Ctrl+C or use Copy.');return}navigator.clipboard.writeText(t).then(()=>alert('Prompt copied.')).catch(()=>alert('Select the text and copy manually.'))}
 function downloadImagePrompt(){downloadText('RHYMEWEAVER_IMAGE_PROMPT.txt','POSITIVE PROMPT:\n'+document.getElementById('pmPositive').value+'\n\nNEGATIVE PROMPT:\n'+document.getElementById('pmNegative').value)}
-function cleanLine(s){return String(s).normalize('NFKC').replace(/\s+/g,' ').trim().toUpperCase()}
-function sortReview(){approved=[];review=[];const seen=new Set();for(const raw of document.getElementById('reviewInput').value.split(/\r?\n/)){const line=cleanLine(raw);if(!line)continue;const wc=(line.match(/[A-Z]+/g)||[]).length;if(wc<2||seen.has(line))review.push(line);else{approved.push(line);seen.add(line)}}approved.sort();review.sort();document.getElementById('approvedOut').textContent=approved.join('\n')||'None.';document.getElementById('reviewOut').textContent=review.join('\n')||'None.'}
+let reviewSource='Pasted text', reviewBatch=null, reviewLoadId=0;
+function cleanLine(s){return String(s).normalize('NFKC').replace(/['’]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim()}
+function invalidateReview(){reviewLoadId++;document.getElementById('sortButton').disabled=false;reviewBatch=null;document.querySelectorAll('.reviewExport').forEach(b=>b.disabled=true);document.getElementById('approvedOut').textContent='';document.getElementById('reviewOut').textContent='';document.getElementById('reviewStatus').textContent='Input changed. Sort again before downloading.'}
+async function loadReviewFile(){
+ const f=document.getElementById('reviewFile').files[0];if(!f)return;
+ invalidateReview();const id=reviewLoadId;
+ document.getElementById('sortButton').disabled=true;
+ try{
+  if(!/\.txt$/i.test(f.name))throw new Error('Choose a plain UTF-8 .txt file; convert Apple/Word files first.');
+  if(f.size>25*1024*1024)throw new Error('Please use one text file under 25 MB for this browser tool.');
+  const text=new TextDecoder('utf-8',{fatal:true}).decode(await f.arrayBuffer());
+  if(id!==reviewLoadId)return;
+  if(text.includes('\0'))throw new Error('This looks like a binary file. Choose plain UTF-8 text.');
+  document.getElementById('reviewInput').value=text;reviewSource=f.name;
+  document.getElementById('reviewStatus').textContent='Loaded '+f.name+'. Press Clean · Sort A–Z.';
+ }catch(e){if(id===reviewLoadId)document.getElementById('reviewStatus').textContent=e.message}
+ finally{if(id===reviewLoadId)document.getElementById('sortButton').disabled=false}
+}
+function processReview(text,source){
+ const clean=[],held=[],duplicates=[],seen=new Set(),counts={};
+ const rawLines=text===''?[]:text.split(/\r\n|\n|\r/);
+ // A terminal newline terminates the last record rather than adding another.
+ if(rawLines.length&&rawLines[rawLines.length-1]==='')rawLines.pop();
+ rawLines.forEach((raw,i)=>{
+  const normalized=raw.normalize('NFKC'),line=cleanLine(raw),wc=line?line.split(' ').length:0;
+  const foreignLetters=normalized.replace(/[a-zA-Z]/g,'').match(/\p{L}/u);
+  let reason='';
+  if(!raw.trim())reason='BLANK';
+  else if(/<\/?[a-z][^>]*>|^\s*(?:const|let|var|function|import)\s|^\s*[{}]/i.test(raw))reason='CODE_LIKE';
+  else if(foreignLetters||/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(raw))reason='CHARACTERS_NEED_REVIEW';
+  else if(wc<3)reason=wc===2?'TWO_WORDS':wc===1?'ONE_WORD':'NO_WORDS';
+  else if(seen.has(line))reason='DUPLICATE';
+  if(reason){const record={line:i+1,reason,raw,normalized:line};held.push(record);counts[reason]=(counts[reason]||0)+1;if(reason==='DUPLICATE')duplicates.push(record)}
+  else{seen.add(line);clean.push(line)}
+ });
+ clean.sort();return {source,created:new Date().toISOString(),original:text,clean,held,duplicates,counts,inputLines:rawLines.length};
+}
+function reviewRows(rows){return rows.map(r=>'LINE '+r.line+' | '+r.reason+' | '+r.raw).join('\n')}
+function sortReview(){
+ const input=document.getElementById('reviewInput').value;
+ if(!input.trim()){invalidateReview();document.getElementById('reviewStatus').textContent='Paste text or choose a .txt file first.';return}
+ reviewBatch=processReview(input,reviewSource);approved=reviewBatch.clean;review=reviewBatch.held.map(r=>r.raw);
+ document.getElementById('approvedOut').textContent=approved.slice(0,500).join('\n')||'No clean candidates.';
+ document.getElementById('reviewOut').textContent=reviewRows(reviewBatch.held.slice(0,500))||'No review lines.';
+ document.getElementById('reviewStatus').textContent=reviewBatch.inputLines+' input lines · '+approved.length+' clean · '+review.length+' review (including '+reviewBatch.duplicates.length+' duplicates). Preview: first 500 per panel; downloads include all. Download before closing.';
+ document.querySelectorAll('.reviewExport').forEach(b=>b.disabled=false);
+}
+function exportReview(kind){
+ if(!reviewBatch)return;const b=reviewBatch,stamp=b.created.replace(/[:.]/g,'-');
+ const outputs={clean:['CLEAN_AZ',b.clean.join('\n')],review:['REVIEW_NOT_DELETED',reviewRows(b.held)],duplicates:['DUPLICATES',reviewRows(b.duplicates)],original:['SOURCE_TEXT_COPY',b.original],log:['PROCESS_LOG',JSON.stringify({source:b.source,created:b.created,rule:'At least 3 words; ASCII letters/spaces; uppercase; batch deduplication; A-Z',inputLines:b.inputLines,clean:b.clean.length,review:b.held.length,duplicates:b.duplicates.length,reasons:b.counts,accountingPassed:b.inputLines===b.clean.length+b.held.length,masterUpdated:false,automaticSaving:false},null,2)]};
+ const out=outputs[kind];if(out)downloadText('RHYMEWEAVER_'+stamp+'_'+out[0]+'.txt',out[1]);
+}
 function analyzeText(){const text=document.getElementById('analyzeInput').value,ws=text.toLowerCase().match(/[a-z']+/g)||[],counts={},endings={};ws.forEach(w=>{const fl=w[0].toUpperCase();counts[fl]=(counts[fl]||0)+1;const r=words[w],rk=r?(r.rhyme_key||r.rhyme_key_unstressed):w.slice(-3);endings[rk]=(endings[rk]||0)+1});document.getElementById('analyzeOut').textContent='WORD COUNT: '+ws.length+'\n\nTOP STARTING LETTERS:\n'+Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]+': '+x[1]).join('\n')+'\n\nTOP RHYME KEYS:\n'+Object.entries(endings).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]+': '+x[1]).join('\n')}
-function downloadText(filename,text){const blob=new Blob([text||''],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function downloadText(filename,text){const blob=new Blob([text||''],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+
+if(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'){
+ const status=document.getElementById('offlineStatus');
+ if('serviceWorker' in navigator){
+  status.textContent='Checking offline setup…';
+  navigator.serviceWorker.register('./service-worker.js').then(()=>navigator.serviceWorker.ready).then(()=>{status.textContent='Offline shell ready. Your text and database are NOT automatically saved.'}).catch(()=>{status.textContent='Offline setup failed. Keep this tab online; download results before closing.'});
+ }else status.textContent='Offline installation is unavailable in this browser. Sorting still works in this tab.';
+}
 </script>
 </body>
 </html>
