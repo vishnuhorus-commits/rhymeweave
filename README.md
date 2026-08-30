@@ -1,105 +1,40 @@
-# RhymeWeave V2 • Stable Base
+# RhymeWeaver — Living Library of Language
 
-**RhymeWeave V2 Stable PWA** — A professional writing flow checker for rhymes, alliteration, phrase chains, and prompts.
+Dark teal and gold writing tools with no build step or external JavaScript dependencies.
 
-## ✨ Features
+## One complete sorting path
 
-- **Live Writing Flow Checker** — Real-time alliteration and rhyme highlighting
-- **Word Finder** — 4-level rhyme search (perfect → family → texture → experimental)
-- **Phrase Chain Builder** — Create linked word chains in multiple styles
-- **Alliteration Generator** — Auto-generate alliterative lines by letter
-- **Prompt Creator** — Generate writing prompts from saved words
-- **Review Sorter** — Approve, reject, or hold words for review
-- **Offline Support** — Service worker caches everything for offline use
-- **Local Saving** — Browser storage keeps all work automatically
-- **Export Tools** — Export as CSV, TXT, or JSON
+1. Open `index.html` in Edge or Chrome on Windows, or serve this folder over HTTPS.
+2. Choose **Creative Studio → Review Sorter**.
+3. Paste text or choose one UTF-8 `.txt` file (up to 25 MB).
+4. Press **Clean · Sort A–Z**.
+5. Download clean candidates, review, duplicates, source text copy, and the process log before closing.
 
-## 🚀 Live Deployment
+The sorter keeps at least three words per line, normalizes whitespace and case, removes punctuation, deduplicates within the batch, and sorts A–Z. Apostrophes are removed without splitting contractions; other punctuation separates words. Non-ASCII letters and encoding damage go to review. This is a mechanical filter, not an alliteration or quality judge.
 
-**Now hosted at:** `https://vishnuhorus-commits.github.io/rhymeweave`
+Short, blank, noise, obvious code and duplicate records remain in review with source line numbers and reasons. Sorting leaves the source textarea unchanged. Source-text export preserves loaded text, not original file bytes or encoding. Keep the original file. Previews are capped at 500 records; downloads contain the full batch.
 
-### How to Use on iPad
+No automatic saving, master merging, folder watching, or cloud connection is implemented. The approved HP master and Google candidate are untouched. Sorting again replaces the current batch in memory; download first.
 
-1. Open the link in **Safari**
-2. Tap **Share** button
-3. Tap **Add to Home Screen**
-4. Name it `RhymeWeave`
-5. Tap **Add**
+## Other tools
 
-It's now a full app on your home screen with offline support.
+- Rhyme Finder, A–Z words, phrase chains and writing prompts require a user-supplied JSONL dictionary: one object per line with `word` (or `entry`) and `rhyme_key` (or `rhyme_key_unstressed`). Regular JSON arrays and plain text lists are not supported by that loader.
+- Alliteration Lines randomly selects words by first letter, not pronunciation or grammatical quality.
+- Image Prompt Forge creates text prompts, not images.
+- Text Analyzer counts starting letters and groups dictionary rhyme keys, falling back to spelling suffixes. Suffix matches are not verified rhymes.
+- Reference Library, Archive Vault, Universal Search and Meme Studio are planned. Search is disabled.
+- `horus-command-center.html` is retained unchanged; its dashboard claims are not verified by this repair.
 
-## 📁 Files
+## Hosted offline shell
 
-- `index.html` — Main app (all UI + JavaScript)
-- `service-worker.js` — Offline caching
-- `manifest.json` — PWA configuration
-- `icon-192.png` — App icon (small)
-- `icon-512.png` — App icon (large)
+The manifest and service worker are wired on HTTPS or localhost. Both PNG icons are included. After a successful online visit, the shell is cached. Installation status does not mean user text or dictionaries are stored. Reloading requires importing data again.
 
-## 🔄 Version Strategy
+The worker prefers the network, falls back to the cached shell offline, and cleans only caches with the `rhymeweave-` prefix. It does not return HTML for arbitrary missing assets.
 
-**V2 = Stable Base** ✅
-- Airtight rhyme finder + alliteration analyzer
-- Phrase chains + prompt generation
-- Review sorter with local storage
-- Zero breaking changes planned
+Verify GitHub Pages publishes the intended branch and root directory. A branch or commit link opens source code, not the running app. This repair does not enable Pages, merge itself, or prove live deployment.
 
-Future versions (V3, V4) will **layer new features** on top without breaking V2's core.
+Local HTML works without a service worker; local-file installation is not promised. For home-screen installation, first use a verified HTTPS deployment with the browser's install or Add to Home Screen option.
 
-## 🛠️ Key Features Deep Dive
+## Validation
 
-### Live Writer
-Paste or write text. The app auto-detects:
-- **Alliteration groups** — Words starting with the same letter
-- **Rhyme-like endings** — Words with matching suffixes
-
-### Finder
-Search by 4 rhyme levels using Datamuse API:
-1. **Perfect** — Exact rhyme matches
-2. **Family** — Close partner rhymes
-3. **Texture** — Assonance & consonance
-4. **Experimental** — Near-rhymes & loose suggestions
-
-### Chains
-Build connected word phrases. Generate outputs in 5 styles:
-- Linked phrase chain
-- Poetic sentence
-- Cinematic line
-- Mythic line
-- Rap/hook
-
-### Review System
-Sort words into 4 status categories:
-- ✅ **Approved** — Strong, usable words
-- 🟡 **Maybe** — Potential, needs context
-- 🔵 **Needs Review** — Uncertain, save for later
-- ❌ **Rejected** — Weak or irrelevant
-
-All data is saved locally to browser. Export anytime.
-
-## 🔌 Offline JSON Loader
-
-For **Level 1 (Perfect Rhyme)** searches, you can load a CMUdict-based `rhymes.json` file for fully offline perfect rhyme lookups (no API call needed).
-
-## 📝 Local Development
-
-No build step. Just:
-1. Clone the repo
-2. Open `index.html` in a browser
-3. Everything works offline + with service worker
-
-## 🐛 Known Limits
-
-- Rhyme levels 2–4 require internet (Datamuse API)
-- Service worker caches assets only, not API responses
-- Icons must be placed manually (192x192 and 512x512 PNG)
-
-## 🎯 Roadmap
-
-**V2** ✅ Stable — Rhyme finder + alliteration + chains + review
-**V3** (future) — Image prompt creator, divine word filter
-**V4** (future) — Advanced flow analysis, nested categories
-
----
-
-**Made with Tailwind CSS + Datamuse API + Service Workers**
+Run `node tests/core.cjs` with Node for sorting and export-payload checks. These passed during preparation. With Node, Playwright, and its Chromium browser available, run `node tests/smoke.cjs` for browser checks on a local server. That browser run remains unverified: the Chromium download timed out in the preparation environment. Neither test certifies live deployment or testing on a physical HP/iPad.

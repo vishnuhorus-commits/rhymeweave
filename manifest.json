@@ -1,13 +1,12 @@
 {
-  "name": "RhymeWeave V2",
-  "short_name": "RhymeWeave",
-  "description": "RhymeWeave V2: rhyme finder, alliteration generator, phrase chains, prompts, and review sorter.",
+  "name": "RhymeWeaver \u2014 Living Library of Language",
+  "short_name": "RhymeWeaver",
+  "description": "Rhyme lookup, writing prompts, and three-word A\u2013Z batch sorting.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
-  "orientation": "portrait-primary",
+  "background_color": "#061615",
+  "theme_color": "#061615",
   "icons": [
     {
       "src": "icon-192.png",
