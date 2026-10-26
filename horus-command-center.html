@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#071b1c">
   <title>HORUS A–Z Command Center</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23041112'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23d9aa52' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%23ffe08a'/%3E%3C/svg%3E">
   <style>
     :root{--ink:#041112;--deep:#071b1c;--panel:#0b292a;--panel2:#103536;--teal:#1a7773;--teal2:#39b5aa;--gold:#d9aa52;--gold2:#ffe08a;--cream:#f5ecd8;--muted:#9fb9b5;--danger:#e9826f;--ok:#65d6a6;--line:rgba(217,170,82,.25);--shadow:0 18px 60px rgba(0,0,0,.38);--radius:18px}
     *{box-sizing:border-box}
@@ -27,10 +28,11 @@
     .card{border:1px solid var(--line);border-radius:var(--radius);background:rgba(8,30,31,.92);box-shadow:0 12px 34px rgba(0,0,0,.22);padding:17px}
     .card h2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;color:var(--gold2);font:700 18px/1.2 Georgia,serif}
     .tag{border:1px solid rgba(101,214,166,.35);border-radius:999px;color:var(--ok);padding:3px 8px;font:700 10px/1.4 system-ui;letter-spacing:.08em;text-transform:uppercase}
-    textarea{width:100%;min-height:230px;resize:vertical;border:1px solid rgba(217,170,82,.32);border-radius:14px;background:#041617;color:var(--cream);padding:15px;outline:none}
+    textarea{width:100%;min-height:230px;resize:vertical;border:1px solid rgba(217,170,82,.32);border-radius:14px;background:#041617;color:var(--cream);padding:15px;outline:none;font-size:16px;position:relative;z-index:2;-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
     textarea:focus,input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,170,82,.12)}
-    .drop{position:relative;border:1px dashed rgba(57,181,170,.6);border-radius:14px;padding:12px;text-align:center;color:var(--muted);margin-top:10px;transition:.2s}.drop.over{background:rgba(57,181,170,.12);border-color:var(--gold)}
-    .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+    .drop{position:relative;z-index:1;overflow:hidden;border:1px dashed rgba(57,181,170,.6);border-radius:14px;padding:12px;text-align:center;color:var(--muted);margin-top:10px;transition:.2s}.drop.over{background:rgba(57,181,170,.12);border-color:var(--gold)}
+    .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:16px}
+    input[type="search"]{font-size:16px;-webkit-user-select:text;user-select:text}
     .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
     .btn{border:1px solid rgba(217,170,82,.45);border-radius:11px;background:linear-gradient(145deg,#183f3e,#0c292a);color:var(--cream);padding:10px 13px;font-weight:750;cursor:pointer;transition:.15s}.btn:hover{transform:translateY(-1px);border-color:var(--gold)}.btn:active{transform:translateY(0)}
     .btn.primary{background:linear-gradient(145deg,#e4ba67,#b47e2c);color:#1b1306;border-color:#f6d78f}.btn.safe{border-color:rgba(101,214,166,.45);color:var(--ok)}.btn.danger{border-color:rgba(233,130,111,.45);color:#ffc1b6}
@@ -70,14 +72,15 @@
   <div class="grid">
     <section class="card">
       <h2>𓂀 Intake Gateway <span class="tag">Local only</span></h2>
-      <textarea id="intake" placeholder="Paste one phrase per line…&#10;&#10;SILVER SUN SPEAKS&#10;GILDED GARDENS GLOW"></textarea>
+      <textarea id="intake" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Paste one phrase per line…&#10;&#10;SILVER SUN SPEAKS&#10;GILDED GARDENS GLOW"></textarea>
       <div class="drop" id="dropZone">Drop TXT files here or tap to choose files<input id="files" type="file" accept=".txt,text/plain" multiple aria-label="Choose text files"></div>
       <div class="actions">
-        <button class="btn primary" id="processBtn">PROCESS &amp; SORT A–Z</button>
+        <button class="btn" id="pasteBtn" type="button">Paste text</button>
+        <button class="btn primary" id="processBtn" type="button">PROCESS &amp; SORT A–Z</button>
         <button class="btn" id="clearInputBtn">Clear intake</button>
         <button class="btn safe" id="sampleBtn">Load tiny test</button>
       </div>
-      <div class="notice" id="notice" role="status" aria-live="polite">Ready. Paste or choose text, then process it.</div>
+      <div class="notice" id="notice" role="status" aria-live="polite">Ready. Paste into the box or tap Paste text, then process.</div>
     </section>
 
     <section class="card">
@@ -169,7 +172,115 @@
   function azBundle(){return LETTERS.map(l=>`===== ${l}.txt =====\n${state.phrases.filter(x=>x[0]===l).join('\n')}`).join('\n\n')}
   function sealed(){const seed=`<script>localStorage.setItem(${JSON.stringify(KEY)},${JSON.stringify(JSON.stringify(state))});<\/script>`;const html='<!doctype html>\n'+document.documentElement.outerHTML.replace('<head>','<head>'+seed);download('HORUS_AZ_SEALED_EDITION.html',html,'text/html')}
 
-  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}processLines(v.split(/\r?\n/),'PASTE');$('intake').value=''};
+  function htmlToPlain(html){
+    const doc=new DOMParser().parseFromString(String(html),'text/html');
+    const root=doc.body;
+    if(!root)return '';
+    root.querySelectorAll('script,style,noscript').forEach(el=>el.remove());
+    root.querySelectorAll('br').forEach(el=>el.replaceWith('\n'));
+    root.querySelectorAll('p,div,li,tr,h1,h2,h3,h4,h5,h6,blockquote,section,article,pre').forEach(el=>{
+      el.insertBefore(doc.createTextNode('\n'),el.firstChild);
+      el.append(doc.createTextNode('\n'));
+    });
+    return (root.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+\n/g,'\n').replace(/\n[ \t]+/g,'\n').replace(/\n{2,}/g,'\n').trim();
+  }
+  function plainFromClipboard(cd){
+    if(!cd)return '';
+    const plain=cd.getData('text/plain')||cd.getData('text')||'';
+    if(plain)return plain;
+    const html=cd.getData('text/html');
+    return html?htmlToPlain(html):'';
+  }
+  function isTextField(el){
+    if(!el)return false;
+    if(el.isContentEditable)return true;
+    if(el.tagName==='TEXTAREA')return true;
+    if(el.tagName!=='INPUT')return false;
+    return ['text','search','email','url','tel','password','number'].includes((el.type||'text').toLowerCase());
+  }
+  function isTextLike(file){
+    const type=(file.type||'').toLowerCase();
+    if(type.startsWith('text/')||type==='application/json')return true;
+    return /\.(txt|text|md|csv|json|tsv)$/i.test(file.name||'');
+  }
+  function splitLines(raw){return String(raw).replace(/\u2028|\u2029/g,'\n').split(/\r\n|\n|\r/)}
+  function insertAt(el,text,start,end){
+    const value=String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\u2028|\u2029/g,'\n');
+    if(!value)return 0;
+    const before=el.value;
+    const max=before.length;
+    const a=Math.max(0,Math.min(Number.isInteger(start)?start:max,max));
+    const b=Math.max(a,Math.min(Number.isInteger(end)?end:max,max));
+    el.focus();
+    let inserted=false;
+    if(value.length<=100000){
+      try{el.setSelectionRange(a,b);inserted=document.execCommand('insertText',false,value)===true&&el.value!==before}catch(err){inserted=false}
+    }
+    if(!inserted){
+      if(typeof el.setRangeText==='function'){el.value=before;el.setRangeText(value,a,b,'end')}
+      else{el.value=before.slice(0,a)+value+before.slice(b);try{el.setSelectionRange(a+value.length,a+value.length)}catch(err){}}
+    }
+    return splitLines(value).length;
+  }
+  // A textarea ignores rich-text pastes that carry only text/html. Read the paste
+  // event and insert plain lines. If focus is on a button or the file control, send
+  // the text to intake so Ctrl+V, right-click, and long-press still land somewhere.
+  document.addEventListener('paste',e=>{
+    const target=e.target;
+    const field=isTextField(target)?target:$('intake');
+    const cd=e.clipboardData;
+    const text=plainFromClipboard(cd);
+    if(text){
+      e.preventDefault();
+      const lines=insertAt(field,text,field.selectionStart,field.selectionEnd);
+      if(field.id==='intake')message('Pasted '+lines+' line'+(lines===1?'':'s')+' into intake.','ok');
+      return;
+    }
+    const files=cd?[...cd.files]:[];
+    if(!files.length||field.id!=='intake')return;
+    const textFiles=files.filter(isTextLike);
+    if(!textFiles.length){
+      if(!isTextField(target)){e.preventDefault();message('That paste was not text. Copy the words, or drop a TXT file.','warn')}
+      return;
+    }
+    e.preventDefault();
+    const start=field.selectionStart,end=field.selectionEnd;
+    Promise.all(textFiles.map(f=>f.text().catch(()=>''))).then(parts=>{
+      const joined=parts.filter(Boolean).join('\n');
+      if(!joined){message('Could not read that pasted file.','bad');return}
+      const lines=insertAt($('intake'),joined,start,end);
+      message('Pasted '+lines+' line'+(lines===1?'':'s')+' from '+textFiles.length+' file'+(textFiles.length===1?'':'s')+'.','ok');
+    });
+  });
+  async function pasteFromClipboard(){
+    const el=$('intake');
+    const start=el.selectionStart,end=el.selectionEnd;
+    let text='',denied=!navigator.clipboard||!window.isSecureContext||!navigator.clipboard.readText;
+    if(!denied){
+      try{text=await navigator.clipboard.readText()}catch(err){denied=true}
+    }
+    if(!text&&!denied&&navigator.clipboard.read){
+      try{
+        const items=await navigator.clipboard.read();
+        for(const item of items){
+          if(item.types.includes('text/plain')){const t=await (await item.getType('text/plain')).text();if(t){text=t;break}}
+        }
+        if(!text){
+          for(const item of items){
+            if(item.types.includes('text/html')){text=htmlToPlain(await (await item.getType('text/html')).text());if(text)break}
+          }
+        }
+      }catch(err){denied=!text}
+    }
+    if(text){const lines=insertAt(el,text,start,end);message('Pasted '+lines+' line'+(lines===1?'':'s')+' into intake.','ok');return}
+    el.focus();
+    try{el.setSelectionRange(start,end)}catch(err){}
+    message(denied
+      ?'Clipboard read is not permitted here. Intake is selected — use Ctrl+V, right-click Paste, or long-press and choose Paste.'
+      :'Clipboard is empty. Copy your phrases, then tap Paste text again.','warn');
+  }
+  $('pasteBtn').onclick=pasteFromClipboard;
+  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}processLines(splitLines(v),'PASTE');$('intake').value=''};
   $('clearInputBtn').onclick=()=>{$('intake').value='';message('Intake cleared; saved archive unchanged.')};
   $('sampleBtn').onclick=()=>{$('intake').value='SILVER SUN SPEAKS\nGILDED GARDENS GLOW\nSILVER SUN SPEAKS\nLONE\nRADIANT RIVERS RISE';message('Tiny test loaded. Press PROCESS & SORT A–Z.')};
   $('search').oninput=render;$('clearSearchBtn').onclick=()=>{$('search').value='';activeLetter='ALL';render()};
@@ -180,7 +291,7 @@
   $('backupBtn').onclick=()=>download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');$('sealedBtn').onclick=sealed;
   $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.phrases)||!Array.isArray(x.review))throw Error();state=Object.assign(fresh(),x);save();message('Backup restored successfully.','ok')}catch{message('That file is not a valid HORUS backup.','bad')}e.target.value=''};
   const dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>readFiles(e.dataTransfer.files));$('files').onchange=e=>readFiles(e.target.files);
-  async function readFiles(files){const all=[];for(const f of files){try{all.push(...(await f.text()).split(/\r?\n/))}catch{message(`Could not read ${f.name}.`,'bad')}}if(all.length)processLines(all,[...files].map(x=>x.name).join(', '));$('files').value=''}
+  async function readFiles(files){const all=[];for(const f of files){try{all.push(...splitLines(await f.text()))}catch{message(`Could not read ${f.name}.`,'bad')}}if(all.length)processLines(all,[...files].map(x=>x.name).join(', '));$('files').value=''}
   const d=$('confirmDialog');$('resetBtn').onclick=()=>d.showModal();$('cancelReset').onclick=()=>d.close();$('confirmReset').onclick=()=>{state=fresh();localStorage.removeItem(KEY);d.close();render();message('Local browser archive reset. GitHub and HP files were not changed.','warn')};
   window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});render();
 })();

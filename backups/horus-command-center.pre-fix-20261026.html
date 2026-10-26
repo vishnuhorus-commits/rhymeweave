@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b1c">
+  <title>HORUS A–Z Command Center</title>
+  <style>
+    :root{--ink:#041112;--deep:#071b1c;--panel:#0b292a;--panel2:#103536;--teal:#1a7773;--teal2:#39b5aa;--gold:#d9aa52;--gold2:#ffe08a;--cream:#f5ecd8;--muted:#9fb9b5;--danger:#e9826f;--ok:#65d6a6;--line:rgba(217,170,82,.25);--shadow:0 18px 60px rgba(0,0,0,.38);--radius:18px}
+    *{box-sizing:border-box}
+    html{color-scheme:dark;scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(26,119,115,.2),transparent 35%),linear-gradient(135deg,#020a0b,#071b1c 45%,#041112);color:var(--cream);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    button,input,textarea{font:inherit}
+    button{touch-action:manipulation}
+    .shell{width:min(1480px,100%);margin:auto;padding:18px}
+    .mast{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:24px;background:linear-gradient(120deg,rgba(16,53,54,.95),rgba(5,20,21,.98));box-shadow:var(--shadow);padding:24px 26px}
+    .mast:after{content:"𓂀 𓋹 𓆣 𓂀";position:absolute;right:18px;top:-18px;color:rgba(217,170,82,.08);font:80px/1 serif;letter-spacing:16px;transform:rotate(-4deg);pointer-events:none}
+    .eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}
+    h1{margin:4px 0 2px;font:700 clamp(29px,5vw,54px)/1.03 Georgia,serif;color:var(--cream);letter-spacing:-.035em}
+    h1 span{color:var(--gold)}
+    .sub{margin:8px 0 0;color:var(--muted);max-width:850px}
+    .motto{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--gold2);font-size:13px}.motto:before,.motto:after{content:"";width:32px;height:1px;background:var(--gold)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;margin:16px 0}
+    .stat{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,rgba(16,53,54,.9),rgba(7,27,28,.92));padding:14px 16px;box-shadow:0 8px 28px rgba(0,0,0,.2)}
+    .stat b{display:block;color:var(--gold2);font-size:24px;line-height:1.1}.stat span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.09em}
+    .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:14px}
+    .card{border:1px solid var(--line);border-radius:var(--radius);background:rgba(8,30,31,.92);box-shadow:0 12px 34px rgba(0,0,0,.22);padding:17px}
+    .card h2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;color:var(--gold2);font:700 18px/1.2 Georgia,serif}
+    .tag{border:1px solid rgba(101,214,166,.35);border-radius:999px;color:var(--ok);padding:3px 8px;font:700 10px/1.4 system-ui;letter-spacing:.08em;text-transform:uppercase}
+    textarea{width:100%;min-height:230px;resize:vertical;border:1px solid rgba(217,170,82,.32);border-radius:14px;background:#041617;color:var(--cream);padding:15px;outline:none}
+    textarea:focus,input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,170,82,.12)}
+    .drop{position:relative;border:1px dashed rgba(57,181,170,.6);border-radius:14px;padding:12px;text-align:center;color:var(--muted);margin-top:10px;transition:.2s}.drop.over{background:rgba(57,181,170,.12);border-color:var(--gold)}
+    .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+    .btn{border:1px solid rgba(217,170,82,.45);border-radius:11px;background:linear-gradient(145deg,#183f3e,#0c292a);color:var(--cream);padding:10px 13px;font-weight:750;cursor:pointer;transition:.15s}.btn:hover{transform:translateY(-1px);border-color:var(--gold)}.btn:active{transform:translateY(0)}
+    .btn.primary{background:linear-gradient(145deg,#e4ba67,#b47e2c);color:#1b1306;border-color:#f6d78f}.btn.safe{border-color:rgba(101,214,166,.45);color:var(--ok)}.btn.danger{border-color:rgba(233,130,111,.45);color:#ffc1b6}
+    .notice{min-height:42px;margin-top:10px;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.035);color:var(--muted);border-left:3px solid var(--teal2)}.notice.ok{border-color:var(--ok);color:#c7f7df}.notice.warn{border-color:var(--gold);color:var(--gold2)}.notice.bad{border-color:var(--danger);color:#ffc1b6}
+    .search{display:flex;gap:8px}.search input{flex:1;min-width:0;border:1px solid rgba(217,170,82,.3);border-radius:11px;background:#041617;color:var(--cream);padding:11px 12px;outline:none}
+    .alphabet{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin:11px 0}.letter{border:1px solid rgba(217,170,82,.25);border-radius:9px;background:#0c2b2c;color:var(--muted);padding:7px 2px;cursor:pointer;font-weight:800}.letter.on{background:var(--gold);color:#1b1306}.letter em{display:block;font:normal 9px/1 system-ui;margin-top:2px;opacity:.75}
+    .results{height:312px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
+    .row{display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.06);padding:8px}.row:last-child{border:0}.row span{flex:1;word-break:break-word}.mini{border:0;border-radius:7px;background:#123c3d;color:var(--gold2);padding:4px 7px;cursor:pointer;font-size:11px}
+    .empty{display:grid;place-items:center;height:100%;color:#6f9290;text-align:center;padding:25px}
+    .tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.tab{white-space:nowrap;border:1px solid rgba(217,170,82,.25);border-radius:10px;background:#0b2829;color:var(--muted);padding:8px 11px;cursor:pointer}.tab.on{color:#1b1306;background:var(--gold);font-weight:800}
+    .review{height:246px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
+    .review .why{display:block;color:var(--danger);font-size:11px;margin-top:2px}
+    .exports{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .rulelist{margin:0;padding-left:19px;color:var(--muted)}.rulelist strong{color:var(--cream)}
+    footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#779895;font-size:12px;padding:15px 4px 4px}footer a{color:var(--gold2)}
+    dialog{width:min(620px,calc(100% - 30px));border:1px solid var(--line);border-radius:18px;background:#082526;color:var(--cream);box-shadow:var(--shadow);padding:20px}dialog::backdrop{background:rgba(0,0,0,.72)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.alphabet{grid-template-columns:repeat(9,1fr)}}
+    @media(max-width:520px){.shell{padding:8px}.mast{padding:20px 16px}.stats{gap:7px}.stat{padding:12px}.alphabet{grid-template-columns:repeat(7,1fr)}.exports{grid-template-columns:1fr}.btn{flex:1 1 auto}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="mast">
+    <div class="eyebrow">Alliteration Archive · Living Local Edition</div>
+    <h1>HORUS <span>A–Z</span> COMMAND CENTER</h1>
+    <p class="sub">One safe surface to gather, guard, clean, sort, search and export alliterative phrases. Your archive remains on this device unless you export it.</p>
+    <div class="motto">ONLY WHAT IS NEW · NOTHING DELETED</div>
+  </header>
+
+  <section class="stats" aria-label="Archive statistics">
+    <div class="stat"><b id="totalStat">0</b><span>In the archive</span></div>
+    <div class="stat"><b id="lastStat">0</b><span>Added last drop</span></div>
+    <div class="stat"><b id="dupeStat">0</b><span>Duplicates caught</span></div>
+    <div class="stat"><b id="reviewStat">0</b><span>Review preserved</span></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>𓂀 Intake Gateway <span class="tag">Local only</span></h2>
+      <textarea id="intake" placeholder="Paste one phrase per line…&#10;&#10;SILVER SUN SPEAKS&#10;GILDED GARDENS GLOW"></textarea>
+      <div class="drop" id="dropZone">Drop TXT files here or tap to choose files<input id="files" type="file" accept=".txt,text/plain" multiple aria-label="Choose text files"></div>
+      <div class="actions">
+        <button class="btn primary" id="processBtn">PROCESS &amp; SORT A–Z</button>
+        <button class="btn" id="clearInputBtn">Clear intake</button>
+        <button class="btn safe" id="sampleBtn">Load tiny test</button>
+      </div>
+      <div class="notice" id="notice" role="status" aria-live="polite">Ready. Paste or choose text, then process it.</div>
+    </section>
+
+    <section class="card">
+      <h2>Archive Explorer <span class="tag" id="viewTag">All letters</span></h2>
+      <div class="search"><input id="search" type="search" placeholder="Search every saved phrase…" aria-label="Search archive"><button class="btn" id="clearSearchBtn">Clear</button></div>
+      <div class="alphabet" id="alphabet" aria-label="Filter by first letter"></div>
+      <div class="results" id="results"></div>
+      <div class="actions"><button class="btn" id="copyViewBtn">Copy visible</button><button class="btn" id="exportViewBtn">Export visible</button></div>
+    </section>
+
+    <section class="card">
+      <h2>Review Station <span class="tag">Never deleted</span></h2>
+      <div class="tabs"><button class="tab on" data-review="all">All review</button><button class="tab" data-review="duplicate">Duplicates</button><button class="tab" data-review="one-word">One word</button><button class="tab" data-review="non-a-z">Non A–Z</button></div>
+      <div class="review" id="review"></div>
+      <div class="actions"><button class="btn safe" id="approveAllBtn">Approve visible</button><button class="btn" id="exportReviewBtn">Export review</button></div>
+    </section>
+
+    <section class="card">
+      <h2>Sealed Outputs <span class="tag">You control exports</span></h2>
+      <div class="exports">
+        <button class="btn primary" id="masterBtn">MASTER_AZ_INDEX.txt</button>
+        <button class="btn" id="azBtn">A–Z text bundle</button>
+        <button class="btn" id="logBtn">PROCESS_LOG.txt</button>
+        <button class="btn" id="backupBtn">Archive backup.json</button>
+        <button class="btn" id="restoreBtn">Restore backup</button>
+        <button class="btn safe" id="sealedBtn">Save Sealed Edition</button>
+      </div>
+      <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+      <div style="height:14px"></div>
+      <h2>Guardrails</h2>
+      <ul class="rulelist">
+        <li><strong>Uppercase</strong> letters and spaces</li>
+        <li><strong>Two or more words</strong> for automatic acceptance</li>
+        <li><strong>Exact deduplication</strong> across every drop</li>
+        <li><strong>Review preservation</strong> for anything not accepted</li>
+        <li><strong>Device storage</strong> with manual backup and restore</li>
+      </ul>
+      <div class="actions"><button class="btn danger" id="resetBtn">Reset local archive…</button></div>
+    </section>
+  </div>
+  <footer><span>HORUS A–Z · additive, repeatable, exportable</span><span><a href="./">RhymeWeaver home</a> · Data stays in this browser</span></footer>
+</main>
+
+<dialog id="confirmDialog">
+  <h2 style="color:var(--gold2);font-family:Georgia,serif">Reset this browser’s local archive?</h2>
+  <p>This clears only the saved copy inside this browser. Export a backup first if you want to recover it later. Nothing in GitHub or on your HP is changed.</p>
+  <div class="actions"><button class="btn" id="cancelReset">Cancel</button><button class="btn danger" id="confirmReset">Reset local copy</button></div>
+</dialog>
+
+<script>
+(() => {
+  'use strict';
+  const KEY='HORUS_AZ_COMMAND_CENTER_V1';
+  const LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const $=id=>document.getElementById(id);
+  const fresh=()=>({version:1,phrases:[],review:[],logs:[],lastAdded:0,totalDupes:0});
+  let state=load(), activeLetter='ALL', reviewFilter='all';
+
+  function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return x&&Array.isArray(x.phrases)&&Array.isArray(x.review)?Object.assign(fresh(),x):fresh()}catch{return fresh()}}
+  function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
+  function clean(raw){return String(raw).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim()}
+  function reason(text){if(!text)return 'blank';if(!/^[A-Z]/.test(text))return 'non-a-z';if(text.split(' ').length<2)return 'one-word';return ''}
+  function addReview(raw,normalized,why,source){state.review.push({id:crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random(),raw:String(raw),text:normalized,why,source,at:new Date().toISOString()})}
+  function processLines(lines,source='PASTE'){
+    const known=new Set(state.phrases), batch=new Set();let added=0,dupes=0,reviewed=0,blanks=0;
+    for(const raw of lines){const text=clean(raw);if(!text){blanks++;continue}const why=reason(text);if(why){addReview(raw,text,why,source);reviewed++;continue}if(known.has(text)||batch.has(text)){addReview(raw,text,'duplicate',source);dupes++;reviewed++;continue}batch.add(text);known.add(text);state.phrases.push(text);added++}
+    state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;state.totalDupes+=dupes;
+    state.logs.unshift({at:new Date().toISOString(),source,scanned:lines.length,added,duplicates:dupes,review:reviewed,blank:blanks});
+    save();message(`Complete: ${added} new · ${dupes} duplicates · ${reviewed} review · ${blanks} blank`,added?'ok':'warn');
+  }
+  function message(text,type=''){const n=$('notice');n.textContent=text;n.className='notice '+type}
+  function counts(){const c=Object.fromEntries(LETTERS.map(x=>[x,0]));state.phrases.forEach(x=>{if(c[x[0]]!==undefined)c[x[0]]++});return c}
+  function visible(){const q=$('search').value.trim().toUpperCase();return state.phrases.filter(x=>(activeLetter==='ALL'||x[0]===activeLetter)&&(!q||x.includes(q)))}
+  function visibleReview(){return state.review.filter(x=>reviewFilter==='all'||x.why===reviewFilter)}
+  function render(){
+    $('totalStat').textContent=state.phrases.length.toLocaleString();$('lastStat').textContent=state.lastAdded.toLocaleString();$('dupeStat').textContent=state.totalDupes.toLocaleString();$('reviewStat').textContent=state.review.length.toLocaleString();
+    const c=counts(), a=$('alphabet');a.innerHTML='';
+    [['ALL',state.phrases.length],...LETTERS.map(x=>[x,c[x]])].forEach(([l,n])=>{const b=document.createElement('button');b.className='letter '+(activeLetter===l?'on':'');b.innerHTML=`${l}<em>${n}</em>`;b.onclick=()=>{activeLetter=l;render()};a.appendChild(b)});
+    const list=visible();$('viewTag').textContent=(activeLetter==='ALL'?'All letters':activeLetter)+' · '+list.length;
+    const box=$('results');box.innerHTML='';if(!list.length)box.innerHTML='<div class="empty">No matching phrases yet.<br>Process a tiny test or add your own lines.</div>';else list.slice(0,3000).forEach(text=>{const r=document.createElement('div');r.className='row';const s=document.createElement('span');s.textContent=text;const b=document.createElement('button');b.className='mini';b.textContent='COPY';b.onclick=()=>copy(text);r.append(s,b);box.appendChild(r)});
+    const rv=visibleReview(), rb=$('review');rb.innerHTML='';if(!rv.length)rb.innerHTML='<div class="empty">Review is clear for this filter.</div>';else rv.slice(0,3000).forEach(item=>{const r=document.createElement('div');r.className='row';const s=document.createElement('span');s.textContent=item.text||item.raw;const why=document.createElement('small');why.className='why';why.textContent=item.why+' · '+item.source;s.appendChild(why);const b=document.createElement('button');b.className='mini';b.textContent='APPROVE';b.onclick=()=>approve(item.id);r.append(s,b);rb.appendChild(r)});
+  }
+  function approve(id){const i=state.review.findIndex(x=>x.id===id);if(i<0)return;const item=state.review[i],text=clean(item.text||item.raw);if(!text){message('That line is blank after cleaning.','bad');return}if(state.phrases.includes(text)){item.why='duplicate';message('Already in archive; preserved as duplicate.','warn');save();return}state.phrases.push(text);state.phrases.sort((a,b)=>a.localeCompare(b));state.review.splice(i,1);state.logs.unshift({at:new Date().toISOString(),source:'REVIEW APPROVAL',scanned:1,added:1,duplicates:0,review:0,blank:0});state.lastAdded=1;save();message('Review line approved and added.','ok')}
+  function approveVisible(){const ids=visibleReview().map(x=>x.id);let added=0;for(const id of ids){const i=state.review.findIndex(x=>x.id===id);if(i<0)continue;const text=clean(state.review[i].text||state.review[i].raw);if(text&&!state.phrases.includes(text)){state.phrases.push(text);state.review.splice(i,1);added++}}
+    state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;state.logs.unshift({at:new Date().toISOString(),source:'BULK REVIEW APPROVAL',scanned:ids.length,added,duplicates:ids.length-added,review:0,blank:0});save();message(`${added} review lines approved; existing duplicates stayed in review.`,added?'ok':'warn')}
+  function download(name,text,type='text/plain'){const blob=new Blob([text],{type:type+';charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);message(`Downloaded ${name}`,'ok')}
+  async function copy(text){try{await navigator.clipboard.writeText(text);message('Copied to clipboard.','ok')}catch{message('Copy was blocked; use Export instead.','bad')}}
+  function logText(){return ['HORUS A-Z PROCESS LOG','GENERATED '+new Date().toISOString(),'','DATE\tSOURCE\tSCANNED\tADDED\tDUPLICATES\tREVIEW\tBLANK',...state.logs.map(x=>[x.at,x.source,x.scanned,x.added,x.duplicates,x.review,x.blank].join('\t'))].join('\n')}
+  function azBundle(){return LETTERS.map(l=>`===== ${l}.txt =====\n${state.phrases.filter(x=>x[0]===l).join('\n')}`).join('\n\n')}
+  function sealed(){const seed=`<script>localStorage.setItem(${JSON.stringify(KEY)},${JSON.stringify(JSON.stringify(state))});<\/script>`;const html='<!doctype html>\n'+document.documentElement.outerHTML.replace('<head>','<head>'+seed);download('HORUS_AZ_SEALED_EDITION.html',html,'text/html')}
+
+  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}processLines(v.split(/\r?\n/),'PASTE');$('intake').value=''};
+  $('clearInputBtn').onclick=()=>{$('intake').value='';message('Intake cleared; saved archive unchanged.')};
+  $('sampleBtn').onclick=()=>{$('intake').value='SILVER SUN SPEAKS\nGILDED GARDENS GLOW\nSILVER SUN SPEAKS\nLONE\nRADIANT RIVERS RISE';message('Tiny test loaded. Press PROCESS & SORT A–Z.')};
+  $('search').oninput=render;$('clearSearchBtn').onclick=()=>{$('search').value='';activeLetter='ALL';render()};
+  $('copyViewBtn').onclick=()=>copy(visible().join('\n'));$('exportViewBtn').onclick=()=>download(activeLetter==='ALL'?'VISIBLE_AZ_RESULTS.txt':activeLetter+'.txt',visible().join('\n'));
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');reviewFilter=b.dataset.review;render()});
+  $('approveAllBtn').onclick=approveVisible;$('exportReviewBtn').onclick=()=>download('REVIEW_NOT_DELETED.txt',visibleReview().map(x=>`${x.why}\t${x.text||x.raw}\t${x.source}`).join('\n'));
+  $('masterBtn').onclick=()=>download('MASTER_AZ_INDEX.txt',state.phrases.join('\n'));$('azBtn').onclick=()=>download('A_Z_TEXT_BUNDLE.txt',azBundle());$('logBtn').onclick=()=>download('PROCESS_LOG.txt',logText());
+  $('backupBtn').onclick=()=>download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');$('sealedBtn').onclick=sealed;
+  $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.phrases)||!Array.isArray(x.review))throw Error();state=Object.assign(fresh(),x);save();message('Backup restored successfully.','ok')}catch{message('That file is not a valid HORUS backup.','bad')}e.target.value=''};
+  const dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>readFiles(e.dataTransfer.files));$('files').onchange=e=>readFiles(e.target.files);
+  async function readFiles(files){const all=[];for(const f of files){try{all.push(...(await f.text()).split(/\r?\n/))}catch{message(`Could not read ${f.name}.`,'bad')}}if(all.length)processLines(all,[...files].map(x=>x.name).join(', '));$('files').value=''}
+  const d=$('confirmDialog');$('resetBtn').onclick=()=>d.showModal();$('cancelReset').onclick=()=>d.close();$('confirmReset').onclick=()=>{state=fresh();localStorage.removeItem(KEY);d.close();render();message('Local browser archive reset. GitHub and HP files were not changed.','warn')};
+  window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});render();
+})();
+</script>
+</body>
+</html>
