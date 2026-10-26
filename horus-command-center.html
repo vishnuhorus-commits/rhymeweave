@@ -25,7 +25,7 @@
     .stat{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,rgba(16,53,54,.9),rgba(7,27,28,.92));padding:14px 16px;box-shadow:0 8px 28px rgba(0,0,0,.2)}
     .stat b{display:block;color:var(--gold2);font-size:24px;line-height:1.1}.stat span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.09em}
     .grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:14px}
-    .card{border:1px solid var(--line);border-radius:var(--radius);background:rgba(8,30,31,.92);box-shadow:0 12px 34px rgba(0,0,0,.22);padding:17px}
+    .card{min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:rgba(8,30,31,.92);box-shadow:0 12px 34px rgba(0,0,0,.22);padding:17px}
     .card h2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;color:var(--gold2);font:700 18px/1.2 Georgia,serif}
     .tag{border:1px solid rgba(101,214,166,.35);border-radius:999px;color:var(--ok);padding:3px 8px;font:700 10px/1.4 system-ui;letter-spacing:.08em;text-transform:uppercase}
     textarea{width:100%;min-height:230px;resize:vertical;border:1px solid rgba(217,170,82,.32);border-radius:14px;background:#041617;color:var(--cream);padding:15px;outline:none;font-size:16px;position:relative;z-index:2;-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
@@ -42,11 +42,58 @@
     .results{height:312px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
     .row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.06);padding:8px}.row:last-child{border:0}.row span{flex:1;min-width:140px;word-break:break-word}.mini{border:0;border-radius:7px;background:#123c3d;color:var(--gold2);padding:6px 8px;cursor:pointer;font-size:12px}
     .junkpanel{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--muted)}.junkpanel b{color:var(--gold2)}
+    .junkreasons{margin:6px 0;color:var(--gold2);font-size:13px}
+    .junkpreview{max-height:240px;overflow:auto;margin-top:8px;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
+    .junkpreview:empty{display:none}
+    .junkpreview .empty{height:auto;padding:12px}
+    .review-tools{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:var(--cream);font-size:16px}
+    .review-tools[hidden]{display:none !important}
+    .review-tools input,.row input.pick{width:22px;height:22px;accent-color:#d9aa52;flex:0 0 auto}
+    .review-bar{position:sticky;bottom:8px;z-index:6;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#102826;box-shadow:var(--shadow);max-width:100%}
+    .review-bar[hidden]{display:none !important}
     .allow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;color:var(--muted);align-items:center}
     .toast{position:fixed;z-index:40;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;max-width:min(560px,calc(100% - 24px));border:1px solid var(--line);border-radius:14px;background:#102826;color:var(--cream);padding:12px 14px;box-shadow:var(--shadow)}
     .toast[hidden]{display:none}
+    #desk[hidden],#consonant[hidden],#recoverNote[hidden]{display:none !important}
+    #consonant{margin-top:14px}
+    .cs-lesson{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+    .cs-lesson div{border:1px solid var(--line);border-top:2px solid var(--gold);border-radius:12px;background:linear-gradient(180deg,rgba(16,53,54,.9),rgba(7,27,28,.92));padding:12px 14px}
+    .cs-lesson div:nth-child(2){border-top-color:var(--teal2)}
+    .cs-lesson div:nth-child(3){border-top-color:#c3aef0}
+    .cs-lesson h3{margin:0 0 4px;font:700 16px/1.2 Georgia,serif;color:var(--gold2)}
+    .cs-lesson p{margin:0;color:var(--muted);font-size:14px}
+    .cs-lesson code{color:var(--gold2)}
+    .cs-sounds{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px}
+    .cs-sd{background:#0c2b2c;border:1px solid rgba(217,170,82,.28);color:var(--cream);padding:8px 12px;border-radius:10px;cursor:pointer;font:13px/1.2 system-ui,sans-serif;text-align:center;min-width:52px}
+    .cs-sd b{display:block;font:700 15px/1.2 Georgia,serif;color:var(--gold2)}
+    .cs-sd small{color:var(--muted);font-size:10px}
+    .cs-sd.on{background:var(--gold);border-color:var(--gold)}
+    .cs-sd.on b,.cs-sd.on small{color:#1b1306}
+    .cs-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .cs-col{border:1px solid var(--line);border-radius:14px;background:#041617;padding:14px;min-height:120px}
+    .cs-col.allit{border-left:3px solid var(--gold)}
+    .cs-col.cons{border-left:3px solid var(--teal2)}
+    .cs-col h3{margin:0 0 4px;font:700 18px/1.2 Georgia,serif;color:var(--gold2)}
+    .cs-col.cons h3{color:var(--teal2)}
+    .cs-n{color:var(--muted);font-size:12px;margin-bottom:8px}
+    .cs-words{max-height:320px;overflow:auto;line-height:2}
+    .cs-w{display:inline-block;padding:2px 8px;margin:0 4px 4px 0;border-radius:14px;cursor:pointer;background:rgba(217,170,82,.12);border:1px solid rgba(217,170,82,.28);color:var(--cream);font-size:14px}
+    .cs-col.cons .cs-w{background:rgba(57,181,170,.12);border-color:rgba(57,181,170,.3)}
+    .cs-w i{color:var(--muted);font-size:11px;font-style:normal;margin-left:4px}
+    .cs-w em{font-style:normal;color:#fff;background:rgba(57,181,170,.5);border-radius:3px;padding:0 1px}
+    .cs-q{width:100%;border:1px solid rgba(57,181,170,.4);border-radius:12px;background:#041617;color:var(--cream);padding:12px 14px;font-size:16px;outline:none}
+    .cs-q:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,170,82,.12)}
+    .cs-look{margin-top:12px;border:1px solid var(--line);border-radius:14px;background:#041617;padding:14px 16px}
+    .cs-look[hidden]{display:none !important}
+    .cs-kv{margin-bottom:12px}
+    .cs-kv b{display:block;color:var(--teal2);font:700 11px/1.3 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}
+    .cs-kv .v{font:700 20px/1.3 Georgia,serif;color:var(--gold2);letter-spacing:.04em}
+    .cs-kv p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .cs-src{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+    .cs-phrases{max-height:220px;overflow:auto;margin-top:8px}
+    @media(max-width:820px){.cs-lesson,.cs-cols{grid-template-columns:1fr}}
     .empty{display:grid;place-items:center;height:100%;color:#6f9290;text-align:center;padding:25px}
-    .tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.tab{white-space:nowrap;border:1px solid rgba(217,170,82,.25);border-radius:10px;background:#0b2829;color:var(--muted);padding:8px 11px;cursor:pointer}.tab.on{color:#1b1306;background:var(--gold);font-weight:800}
+    .tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px;min-width:0}.tab{white-space:nowrap;border:1px solid rgba(217,170,82,.25);border-radius:10px;background:#0b2829;color:var(--muted);padding:8px 11px;cursor:pointer}.tab.on{color:#1b1306;background:var(--gold);font-weight:800}
     .review{height:246px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
     .review .why{display:block;color:var(--danger);font-size:11px;margin-top:2px}
     .exports{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
@@ -75,8 +122,10 @@
     <div class="stat"><b id="fewStat">0</b><span>Too few words</span></div>
     <div class="stat"><b id="unknownStat">0</b><span>Unknown word</span></div>
   </section>
+  <div class="notice bad" id="recoverNote" hidden>The saved archive is still in this browser, but its shape could not be read. It was not overwritten. Use Import backup once the JSON or TXT file is recovered.</div>
+  <div class="tabs" id="sectionTabs" aria-label="Command center sections"><button class="tab on" type="button" data-section="desk">Command desk</button><button class="tab" type="button" data-section="consonant">Consonant Search</button></div>
 
-  <div class="grid">
+  <div class="grid" id="desk">
     <section class="card">
       <h2>𓂀 Intake Gateway <span class="tag">Local only</span></h2>
       <textarea id="intake" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Paste one phrase per line…&#10;&#10;SILVER SUN SPEAKS&#10;GILDED GARDENS GLOW"></textarea>
@@ -98,15 +147,23 @@
       <div class="actions"><button class="btn" id="copyViewBtn" type="button">Copy visible</button><button class="btn" id="exportViewBtn" type="button">Export visible</button><button class="btn" id="findJunkBtn" type="button">Find junk</button></div>
       <div class="junkpanel" id="junkPanel" hidden>
         <b id="junkSummary">Junk</b>
+        <div class="junkreasons" id="junkReasons"></div>
         <div id="junkLetters"></div>
-        <div class="actions"><button class="btn" id="moveJunkBtn" type="button">Move all 0 to review</button></div>
+        <div class="junkpreview" id="junkPreview"></div>
+        <div class="actions"><button class="btn" id="moveJunkBtn" type="button" disabled>Move all … to review</button></div>
       </div>
     </section>
 
     <section class="card">
       <h2>Review Station <span class="tag">Never deleted</span></h2>
-      <div class="tabs"><button class="tab on" data-review="all">All review</button><button class="tab" data-review="two-word">Two word</button><button class="tab" data-review="under 3">Under 3</button><button class="tab" data-review="unknown">Unknown word</button><button class="tab" data-review="removed by hand">Removed</button><button class="tab" data-review="duplicate">Duplicates</button><button class="tab" data-review="one-word">One word</button><button class="tab" data-review="non-a-z">Non A–Z</button><button class="tab" data-review="discarded">Discarded</button></div>
+      <div class="tabs" id="reviewTabs"><button class="tab on" data-review="all">All review</button><button class="tab" data-review="two-word">Two word</button><button class="tab" data-review="under 3">Under 3</button><button class="tab" data-review="unknown">Unknown word</button><button class="tab" data-review="removed by hand">Removed</button><button class="tab" data-review="duplicate">Duplicates</button><button class="tab" data-review="one-word">One word</button><button class="tab" data-review="non-a-z">Non A–Z</button><button class="tab" data-review="discarded">Discarded</button></div>
+      <label class="review-tools" id="selectAllWrap"><input type="checkbox" id="selectAllReview"> <span id="selectAllLabel">Select all (0)</span></label>
       <div class="review" id="review"></div>
+      <div class="review-bar" id="reviewBar">
+        <button class="btn safe" id="approveSelectedBtn" type="button">Approve selected (0)</button>
+        <button class="btn" id="discardSelectedBtn" type="button">Discard selected (0)</button>
+        <button class="btn" id="clearSelectionBtn" type="button">Clear selection</button>
+      </div>
       <div class="actions"><button class="btn safe" id="approveAllBtn" type="button">Approve visible</button><button class="btn" id="exportReviewBtn" type="button">Export review</button><button class="btn" id="exportDiscardBtn" type="button">Export discarded</button><button class="btn safe" id="restoreDiscardBtn" type="button">Restore discarded</button></div>
       <div class="allow" id="allowBox" aria-label="Allowed words"></div>
     </section>
@@ -118,10 +175,11 @@
         <button class="btn" id="azBtn">A–Z text bundle</button>
         <button class="btn" id="logBtn">PROCESS_LOG.txt</button>
         <button class="btn" id="backupBtn">Archive backup.json</button>
-        <button class="btn" id="restoreBtn">Restore backup</button>
+        <button class="btn" id="restoreBtn" type="button">Restore backup</button>
+        <button class="btn" id="importBtn" type="button">Import backup</button>
         <button class="btn safe" id="sealedBtn">Save Sealed Edition</button>
       </div>
-      <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+      <input id="importFile" type="file" accept=".json,.txt,application/json,text/plain" hidden>
       <div style="height:14px"></div>
       <h2>Guardrails</h2>
       <ul class="rulelist">
@@ -135,6 +193,33 @@
       <div class="actions"><button class="btn danger" id="resetBtn">Reset local archive…</button></div>
     </section>
   </div>
+
+  <section class="card" id="consonant" hidden data-consonant-search="lazy">
+    <h2>Consonant Search <span class="tag">Lazy list</span></h2>
+    <p class="sub" id="csStat">Open this tab to load the consonant list.</p>
+    <div class="cs-src" aria-label="Word source">
+      <button class="cs-sd on" type="button" data-cs="builtin">Built-in list</button>
+      <button class="cs-sd" type="button" data-cs="archive">Archive phrases</button>
+      <button class="cs-sd" type="button" data-cs="both">Both</button>
+    </div>
+    <div class="cs-lesson">
+      <div><h3>Alliteration</h3><p>The same sound at the <b>front</b> of words. <code>Silent · Cities · Psalms</code> — three different letters, one sound.</p></div>
+      <div><h3>Consonance</h3><p>The same sound <b>anywhere</b> after the opening. <code>li<em>tt</em>le · be<em>tt</em>er · ba<em>tt</em>le</code>.</p></div>
+      <div><h3>Skeleton</h3><p>The word with its vowels taken out. <code>SENT · SCENT · SAINT</code> all reduce to <code>S·N·T</code>.</p></div>
+    </div>
+    <h2>By sound</h2>
+    <div class="cs-sounds" id="csSounds"></div>
+    <div class="cs-cols">
+      <div class="cs-col allit"><h3>Alliteration — at the front</h3><div class="cs-n" id="csAn">—</div><div class="cs-words" id="csAw"></div></div>
+      <div class="cs-col cons"><h3>Consonance — inside, not at the front</h3><div class="cs-n" id="csCn">—</div><div class="cs-words" id="csCw"></div></div>
+    </div>
+    <h2 style="margin-top:16px">Archive lines with this sound</h2>
+    <div class="cs-n" id="csPn">—</div>
+    <div class="results cs-phrases" id="csPhrases"></div>
+    <h2 style="margin-top:16px">Look one word up</h2>
+    <input class="cs-q" id="csQ" type="text" placeholder="Type a word — SNAKE, SILENT, WRATH, GLORY…" autocomplete="off" autocapitalize="characters" spellcheck="false">
+    <div class="cs-look" id="csLook" hidden></div>
+  </section>
   <footer><span>HORUS A–Z · additive, repeatable, exportable</span><span><a href="./">RhymeWeaver home</a> · Data stays in this browser</span></footer>
 </main>
 
@@ -149,29 +234,148 @@
 (() => {
   'use strict';
   const KEY='HORUS_AZ_COMMAND_CENTER_V1';
+  const RAW_KEY='HORUS_AZ_COMMAND_CENTER_V1_RAW_BACKUP';
   const LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   const STOP=new Set('A AN THE OF AND TO IN ON FOR WITH FROM BY AT AS OR BUT NOR INTO ONTO UPON OVER UNDER OUT UP OFF PER VIA THAN'.split(' '));
   const DICT=new Set();
   let dictReady=false;
   const $=id=>document.getElementById(id);
   const fresh=()=>({version:2,phrases:[],review:[],discarded:[],allow:[],kept:[],logs:[],lastAdded:0,totalDupes:0});
+  let loadFallback=false, junkCache=null, junkGen=0, junkPromise=null, junkView=0, phraseStamp=0, allowSetCache=null, dictPromise=null;
+  let selectedReview=new Set(), reviewAnchor=null;
   let state=load(), activeLetter='ALL', reviewFilter='all', undoTimer=0;
 
-  function load(){
-    try{
-      const x=JSON.parse(localStorage.getItem(KEY));
-      if(!x||!Array.isArray(x.phrases)||!Array.isArray(x.review)) return fresh();
-      const s=Object.assign(fresh(),x);
-      if(!Array.isArray(s.discarded)) s.discarded=[];
-      if(!Array.isArray(s.allow)) s.allow=[];
-      if(!Array.isArray(s.kept)) s.kept=[];
-      if(!Array.isArray(s.logs)) s.logs=[];
-      s.version=2;
-      return s;
-    }catch{return fresh()}
+  function preserveRaw(raw){
+    if(raw==null||raw==='') return true;
+    try{if(localStorage.getItem(RAW_KEY)==null) localStorage.setItem(RAW_KEY,raw);return true}catch(err){return false}
   }
-  function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-  function clean(raw){return String(raw).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/['’]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim()}
+  function uniquePhrases(list){
+    const seen=new Set(), out=[];
+    (list||[]).forEach(p=>{if(p&&!seen.has(p)){seen.add(p);out.push(p)}});
+    return out;
+  }
+  function asPhraseList(value,depth){
+    if(value==null||depth>4) return null;
+    if(typeof value==='string'){
+      const t=value.replace(/^\uFEFF/,'').trim();
+      if(!t) return [];
+      if(t[0]==='{'||t[0]==='['){try{return asPhraseList(JSON.parse(t),depth+1)}catch(err){}}
+      return splitLines(t).map(clean).filter(Boolean);
+    }
+    if(Array.isArray(value)){
+      const out=[];
+      value.forEach(item=>{
+        if(item==null) return;
+        if(typeof item==='string'){const c=clean(item);if(c) out.push(c);return}
+        if(typeof item==='object'){
+          const raw=item.text||item.phrase||item.line||item.phraseText||item.value||item.raw||'';
+          if(typeof raw==='string'&&raw){const c=clean(raw);if(c) out.push(c)}
+        }
+      });
+      return out;
+    }
+    if(typeof value==='object'){
+      const out=[];
+      Object.keys(value).forEach(k=>{
+        if(k==='review'||k==='logs'||k==='allow'||k==='kept'||k==='discarded') return;
+        const part=asPhraseList(value[k],depth+1);
+        if(part&&part.length) out.push(...part);
+      });
+      return out.length?out:null;
+    }
+    return null;
+  }
+  function asReviewList(value){
+    if(value==null) return [];
+    if(Array.isArray(value)) return value.map(item=>{
+      if(typeof item==='string'){const text=clean(item);return text?{id:newId(),raw:item,text,why:'imported',source:'IMPORT',at:new Date().toISOString()}:null}
+      if(item&&typeof item==='object'){if(!item.id) item.id=newId();return item}
+      return null;
+    }).filter(Boolean);
+    if(typeof value==='object'){
+      const out=[];
+      Object.keys(value).forEach(k=>{if(Array.isArray(value[k])) out.push(...asReviewList(value[k]))});
+      return out;
+    }
+    return [];
+  }
+  function interpret(parsed){
+    if(parsed==null) return null;
+    if(typeof parsed==='string'){
+      const t=parsed.replace(/^\uFEFF/,'').trim();
+      if(t.startsWith('{')||t.startsWith('[')){
+        try{return interpret(JSON.parse(t))}catch(err){return null}
+      }
+      const phrases=uniquePhrases(asPhraseList(t,0)||[]);
+      return phrases.length?{phrases,review:[]}:null;
+    }
+    if(Array.isArray(parsed)){
+      const phrases=uniquePhrases(asPhraseList(parsed,0)||[]);
+      return phrases.length?{phrases,review:[]}:null;
+    }
+    if(typeof parsed!=='object') return null;
+    const body=parsed.state&&typeof parsed.state==='object'?parsed.state:parsed;
+    const phraseSource=body.phrases??body.lines??body.items??body.entries??body.master??body.archivePhrases??null;
+    let phrases=phraseSource!=null?asPhraseList(phraseSource,0):null;
+    const looksLikeState=body.version!=null||body.phrases!=null||body.review!=null||body.logs!=null||body.lastAdded!=null||body.totalDupes!=null;
+    if((!phrases||!phrases.length)&&!looksLikeState){
+      const flat=asPhraseList(body,0);
+      if(flat&&flat.length) phrases=flat;
+    }
+    if(phrases==null&&looksLikeState) phrases=[];
+    if(phrases==null) return null;
+    return Object.assign({},body,{phrases:uniquePhrases(phrases),review:asReviewList(body.review??body.reviews??[])});
+  }
+  function applyInterpreted(interpreted){
+    const s=Object.assign(fresh(),interpreted);
+    s.phrases=interpreted.phrases.slice();
+    s.review=Array.isArray(interpreted.review)?interpreted.review:[];
+    if(!Array.isArray(s.discarded)) s.discarded=[];
+    if(!Array.isArray(s.allow)) s.allow=[];
+    if(!Array.isArray(s.kept)) s.kept=[];
+    if(!Array.isArray(s.logs)) s.logs=[];
+    if(typeof s.lastAdded!=='number') s.lastAdded=0;
+    if(typeof s.totalDupes!=='number') s.totalDupes=0;
+    s.version=2;
+    return s;
+  }
+  function load(){
+    let raw=null;
+    try{raw=localStorage.getItem(KEY)}catch(err){raw=null}
+    if(raw==null||raw===''){loadFallback=false;return fresh()}
+    let parsed=null, parseOk=false;
+    try{parsed=JSON.parse(raw);parseOk=true}catch(err){parseOk=false}
+    let interpreted=null;
+    try{interpreted=interpret(parseOk?parsed:raw)}catch(err){interpreted=null}
+    const phraseCount=interpreted&&Array.isArray(interpreted.phrases)?interpreted.phrases.length:0;
+    const reviewCount=interpreted&&Array.isArray(interpreted.review)?interpreted.review.length:0;
+    const legitimateEmpty=!!(parseOk&&interpreted&&phraseCount===0&&reviewCount===0&&raw.length<8000&&Array.isArray(interpreted.phrases));
+    if(!interpreted||(!phraseCount&&!reviewCount&&!legitimateEmpty)){
+      loadFallback=true;
+      preserveRaw(raw);
+      return fresh();
+    }
+    loadFallback=false;
+    return applyInterpreted(interpreted);
+  }
+  function save(){
+    junkCache=null;junkPromise=null;junkGen++;phraseStamp++;allowSetCache=null;
+    markJunkPending();
+    if(loadFallback){
+      message('The stored archive could not be read, so it was not overwritten. Import a backup to replace it.','bad');
+      render();
+      return false;
+    }
+    try{localStorage.setItem(KEY,JSON.stringify(state))}
+    catch(err){message('Browser storage is full. The previous archive was left in place.','bad');render();return false}
+    render();
+    return true;
+  }
+  function clean(raw){
+    const s=String(raw);
+    if(/^[A-Z]+(?: [A-Z]+)*$/.test(s)) return s;
+    return s.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/['’]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
   function stems(word){
     const w=String(word).toLowerCase().replace(/[^a-z]/g,'');
     const out=[];
@@ -183,7 +387,11 @@
     return out.filter(s=>s.length>1);
   }
   function inDict(word){return DICT.has(String(word).toLowerCase())}
-  function allowed(word){return state.allow.includes(String(word).toLowerCase())}
+  function allowSet(){
+    if(!allowSetCache||allowSetCache.size!==state.allow.length) allowSetCache=new Set(state.allow);
+    return allowSetCache;
+  }
+  function allowed(word){return allowSet().has(String(word).toLowerCase())}
   function isKnown(word){
     const w=String(word).toLowerCase().replace(/[^a-z]/g,'');
     if(!w) return false;
@@ -210,20 +418,73 @@
   }
   function tooFew(why){return why==='two-word'||why==='under 3'||why==='one-word'}
   function isUnknown(why){return String(why||'').startsWith('unknown word')}
-  function junkList(){return dictReady?state.phrases.filter(p=>!state.kept.includes(p)&&gate(p)) : []}
+  function classifyJunk(phrases,kept){
+    const out=[];
+    for(let i=0;i<phrases.length;i++){
+      const text=phrases[i];
+      if(kept.has(text)) continue;
+      const why=gate(text);
+      if(why) out.push({text,why});
+    }
+    return out;
+  }
+  function junkList(){
+    if(!dictReady) return null;
+    if(junkCache) return junkCache;
+    if(state.phrases.length>4000){ensureJunk();return null}
+    junkCache=classifyJunk(state.phrases,new Set(state.kept));
+    return junkCache;
+  }
+  function ensureJunk(){
+    if(!dictReady) return Promise.resolve(null);
+    if(junkCache) return Promise.resolve(junkCache);
+    if(junkPromise) return junkPromise;
+    if(state.phrases.length<=4000){
+      junkCache=classifyJunk(state.phrases,new Set(state.kept));
+      return Promise.resolve(junkCache);
+    }
+    const gen=++junkGen, phrases=state.phrases, kept=new Set(state.kept);
+    junkPromise=new Promise(resolve=>{
+      const out=[];
+      let i=0;
+      const step=()=>{
+        if(gen!==junkGen){resolve(null);return}
+        const end=Math.min(i+2500,phrases.length);
+        for(;i<end;i++){
+          const text=phrases[i];
+          if(kept.has(text)) continue;
+          const why=gate(text);
+          if(why) out.push({text,why});
+        }
+        if(i<phrases.length) setTimeout(step,0);
+        else{
+          if(gen!==junkGen){resolve(null);return}
+          junkCache=out;
+          junkPromise=null;
+          if($('junkStat')) $('junkStat').textContent=out.length.toLocaleString();
+          if($('junkPanel')&&!$('junkPanel').hidden) paintJunk(out);
+          resolve(out);
+        }
+      };
+      setTimeout(step,0);
+    });
+    return junkPromise;
+  }
   function learn(text){
+    const set=allowSet();
     wordsOf(text).forEach(w=>{
       const k=w.toLowerCase().replace(/[^a-z]/g,'');
-      if(k.length<2) return;
+      if(k.length<2||set.has(k)) return;
       if(inDict(k)||stems(k).some(inDict)) return;
-      if(!state.allow.includes(k)) state.allow.push(k);
+      set.add(k);state.allow.push(k);
     });
   }
   function protect(text){learn(text);if(gate(text)&&!state.kept.includes(text)) state.kept.push(text)}
   function newId(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()}
   function addReview(raw,normalized,why,source){state.review.push({id:newId(),raw:String(raw),text:normalized,why,source,at:new Date().toISOString()})}
   function processLines(lines,source='PASTE'){
-    if(!dictReady){message('Word list is still loading. Nothing was added.','warn');return}
+    if(loadFallback){message('The stored archive could not be read, so nothing was added and nothing was overwritten.','bad');return false}
+    if(!dictReady){message('Word list is still loading. Nothing was added.','warn');return false}
     const known=new Set(state.phrases), batch=new Set();let added=0,dupes=0,reviewed=0,blanks=0;
     for(const raw of lines){
       const text=clean(raw);
@@ -235,7 +496,9 @@
     }
     state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;state.totalDupes+=dupes;
     state.logs.unshift({at:new Date().toISOString(),source,scanned:lines.length,added,duplicates:dupes,review:reviewed,blank:blanks});
-    save();message(`Complete: ${added} new · ${dupes} duplicates · ${reviewed} review · ${blanks} blank`,added?'ok':'warn');
+    const saved=save();
+    if(saved) message(`Complete: ${added} new · ${dupes} duplicates · ${reviewed} review · ${blanks} blank`,added?'ok':'warn');
+    return saved;
   }
   function message(text,type=''){const n=$('notice');n.textContent=text;n.className='notice '+type}
   function counts(){const c=Object.fromEntries(LETTERS.map(x=>[x,0]));state.phrases.forEach(x=>{if(c[x[0]]!==undefined)c[x[0]]++});return c}
@@ -251,7 +514,8 @@
     const few=state.review.filter(x=>tooFew(x.why)).length;
     const unknown=state.review.filter(x=>isUnknown(x.why)).length;
     $('totalStat').textContent=state.phrases.length.toLocaleString();$('lastStat').textContent=state.lastAdded.toLocaleString();$('dupeStat').textContent=state.totalDupes.toLocaleString();$('reviewStat').textContent=state.review.length.toLocaleString();
-    $('junkStat').textContent=dictReady?junk.length.toLocaleString():'…';$('fewStat').textContent=few.toLocaleString();$('unknownStat').textContent=unknown.toLocaleString();
+    $('junkStat').textContent=junk?junk.length.toLocaleString():'…';$('fewStat').textContent=few.toLocaleString();$('unknownStat').textContent=unknown.toLocaleString();
+    if($('recoverNote')) $('recoverNote').hidden=!loadFallback;
     const c=counts(), a=$('alphabet');a.innerHTML='';
     [['ALL',state.phrases.length],...LETTERS.map(x=>[x,c[x]])].forEach(([l,n])=>{const b=document.createElement('button');b.className='letter '+(activeLetter===l?'on':'');b.innerHTML=`${l}<em>${n}</em>`;b.onclick=()=>{activeLetter=l;render()};a.appendChild(b)});
     const list=visible();$('viewTag').textContent=(activeLetter==='ALL'?'All letters':activeLetter)+' · '+list.length;
@@ -277,15 +541,36 @@
         const back=document.createElement('button');back.className='mini';back.type='button';back.textContent='RESTORE';back.onclick=()=>restoreDiscard(item.id);
         r.append(s,back);
       }else{
+        const id=String(item.id);
+        const pick=document.createElement('input');
+        pick.type='checkbox';pick.className='pick';pick.dataset.id=id;pick.checked=selectedReview.has(id);
+        pick.setAttribute('aria-label','Select '+(item.text||item.raw||'line'));
+        pick.addEventListener('mousedown',e=>{if(e.shiftKey) e.preventDefault()});
+        pick.addEventListener('click',e=>{
+          if(e.shiftKey&&reviewAnchor){
+            e.preventDefault();
+            const ids=visibleReview().map(row=>String(row.id));
+            const a=ids.indexOf(reviewAnchor), b=ids.indexOf(id);
+            if(a>=0&&b>=0){
+              const lo=Math.min(a,b), hi=Math.max(a,b);
+              for(let i=lo;i<=hi;i++) selectedReview.add(ids[i]);
+            }
+          }else if(pick.checked) selectedReview.add(id);
+          else selectedReview.delete(id);
+          reviewAnchor=id;
+          syncSelectionUI(false);
+        });
         const ok=document.createElement('button');ok.className='mini';ok.type='button';ok.textContent='APPROVE';ok.onclick=()=>approve(item.id);
         const no=document.createElement('button');no.className='mini';no.type='button';no.textContent='DISCARD';no.onclick=()=>discard(item.id);
-        r.append(s,ok,no);
+        r.append(pick,s,ok,no);
       }
       rb.appendChild(r);
     });
     const allow=$('allowBox');allow.innerHTML='';
     const label=document.createElement('span');label.textContent=state.allow.length?'Allowed words':'Approve an unknown word and it is added here.';allow.appendChild(label);
-    state.allow.forEach(w=>{const b=document.createElement('button');b.className='mini';b.type='button';b.textContent=w+' ×';b.title='Remove '+w+' from the allow-list';b.onclick=()=>{state.allow=state.allow.filter(x=>x!==w);save()};allow.appendChild(b)});
+    state.allow.forEach(w=>{const b=document.createElement('button');b.className='mini';b.type='button';b.textContent=w+' ×';b.title='Remove '+w+' from the allow-list';b.onclick=()=>{state.allow=state.allow.filter(x=>x!==w);allowSetCache=null;save()};allow.appendChild(b)});
+    syncSelectionUI(true);
+    if(!$('junkPanel').hidden&&junkCache) paintJunk(junkCache);
   }
   function hideToast(){clearTimeout(undoTimer);$('toast').hidden=true}
   function showToast(text,onUndo){
@@ -328,29 +613,185 @@
     state.review.push(...state.discarded);state.discarded=[];
     save();message(n+' discarded line'+(n===1?'':'s')+' restored to review.','ok');
   }
-  function showJunk(){
-    if(!dictReady){message('Word list is still loading.','warn');return}
-    const junk=junkList();
-    const by={};
-    junk.forEach(p=>{const L=p[0]||'?';by[L]=(by[L]||0)+1});
-    const letters=Object.keys(by).sort().map(L=>L+' '+by[L]).join(' · ')||'None';
-    $('junkSummary').textContent=junk.length+' archive entr'+(junk.length===1?'y fails':'ies fail')+' the 3-word rule or the dictionary.';
-    $('junkLetters').textContent=letters;
-    $('moveJunkBtn').textContent='Move all '+junk.length+' to review';
-    $('moveJunkBtn').disabled=!junk.length;
-    $('junkPanel').hidden=false;
+  function markJunkPending(){
+    const panel=$('junkPanel');
+    if(!panel||panel.hidden) return;
+    $('junkSummary').textContent='loading word list…';
+    $('junkReasons').textContent='';
+    $('junkLetters').textContent='';
+    $('junkPreview').replaceChildren();
+    $('moveJunkBtn').disabled=true;
+    $('moveJunkBtn').textContent='Move all … to review';
   }
-  function moveAllJunk(){
-    if(!dictReady){message('Word list is still loading.','warn');return}
-    const junk=junkList();
-    if(!junk.length){message('No junk in the archive.','ok');showJunk();return}
+  function paintJunk(list){
+    list=list||[];
+    let unknown=0,few=0,other=0;
+    const by={};
+    for(let i=0;i<list.length;i++){
+      const why=list[i].why;
+      if(isUnknown(why)) unknown++;
+      else if(tooFew(why)) few++;
+      else other++;
+      const L=list[i].text[0]||'?';
+      by[L]=(by[L]||0)+1;
+    }
+    const letters=Object.keys(by).sort().map(L=>L+' '+by[L].toLocaleString()).join(' · ')||'None';
+    $('junkSummary').textContent=list.length.toLocaleString()+' archive entr'+(list.length===1?'y fails':'ies fail')+' the 3-word rule or the dictionary.';
+    $('junkReasons').textContent='Unknown word: '+unknown.toLocaleString()+' · Too few words: '+few.toLocaleString()+(other?' · Other: '+other.toLocaleString():'');
+    $('junkLetters').textContent=letters;
+    const box=$('junkPreview');
+    box.replaceChildren();
+    const n=Math.min(50,list.length);
+    if(!n){
+      const empty=document.createElement('div');empty.className='empty';empty.textContent='None';box.appendChild(empty);
+    }else{
+      for(let i=0;i<n;i++){
+        const item=list[i];
+        const r=document.createElement('div');r.className='row';
+        const s=document.createElement('span');s.textContent=item.text;
+        const why=document.createElement('small');why.className='why';why.textContent=item.why;s.appendChild(why);
+        r.appendChild(s);box.appendChild(r);
+      }
+      if(list.length>50){
+        const more=document.createElement('div');more.className='empty';
+        more.textContent='Showing the first 50 of '+list.length.toLocaleString()+'.';
+        box.appendChild(more);
+      }
+    }
+    $('moveJunkBtn').textContent='Move all '+list.length.toLocaleString()+' to review';
+    $('moveJunkBtn').disabled=!list.length;
+  }
+  async function showJunk(){
+    const view=++junkView;
+    $('junkPanel').hidden=false;
+    if(!dictReady||!junkCache) markJunkPending();
+    await loadDict();
+    if(view!==junkView) return;
+    if(!dictReady){
+      $('junkSummary').textContent='Word list failed to load. Nothing was moved.';
+      $('moveJunkBtn').disabled=true;
+      $('moveJunkBtn').textContent='Move all … to review';
+      return;
+    }
+    if(!junkCache) markJunkPending();
+    const list=await ensureJunk();
+    if(view!==junkView||!list) return;
+    paintJunk(list);
+  }
+  async function moveAllJunk(){
+    const view=++junkView;
+    $('moveJunkBtn').disabled=true;
+    if(!dictReady) markJunkPending();
+    await loadDict();
+    if(view!==junkView) return;
+    if(!dictReady){message('Word list is still loading. Nothing was moved.','warn');return}
+    const list=await ensureJunk();
+    if(view!==junkView||!list) return;
+    if(!list.length){message('No junk in the archive. Nothing was moved.','ok');paintJunk(list);return}
     download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');
-    const drop=new Set(junk);
+    const drop=new Set(list.map(item=>item.text));
     state.phrases=state.phrases.filter(p=>!drop.has(p));
     state.kept=state.kept.filter(p=>!drop.has(p));
-    junk.forEach(p=>addReview(p,p,gate(p),'FIND JUNK'));
-    state.logs.unshift({at:new Date().toISOString(),source:'FIND JUNK',scanned:junk.length,added:0,duplicates:0,review:junk.length,blank:0});
-    save();showJunk();message('Moved '+junk.length+' junk line'+(junk.length===1?'':'s')+' to review. Backup downloaded.','ok');
+    for(let i=0;i<list.length;i++) addReview(list[i].text,list[i].text,list[i].why,'FIND JUNK');
+    state.logs.unshift({at:new Date().toISOString(),source:'FIND JUNK',scanned:list.length,added:0,duplicates:0,review:list.length,blank:0});
+    const n=list.length;
+    const saved=save();
+    if(!saved){message('The move did not save. The backup file is the copy from before the attempt.','bad');return}
+    message('Moved '+n.toLocaleString()+' junk line'+(n===1?'':'s')+' to review. Backup downloaded.','ok');
+    showJunk();
+  }
+  function syncSelectionUI(prune){
+    if(prune&&selectedReview.size){
+      const live=new Set(state.review.map(item=>String(item.id)));
+      for(const id of selectedReview) if(!live.has(id)) selectedReview.delete(id);
+    }
+    const discardedView=reviewFilter==='discarded';
+    $('selectAllWrap').hidden=discardedView;
+    $('reviewBar').hidden=discardedView;
+    const rows=discardedView?[]:visibleReview();
+    let chosen=0;
+    for(let i=0;i<rows.length;i++) if(selectedReview.has(String(rows[i].id))) chosen++;
+    $('selectAllLabel').textContent='Select all ('+rows.length.toLocaleString()+')';
+    const all=$('selectAllReview');
+    all.checked=rows.length>0&&chosen===rows.length;
+    all.indeterminate=chosen>0&&chosen<rows.length;
+    document.querySelectorAll('#review input.pick').forEach(box=>{box.checked=selectedReview.has(box.dataset.id)});
+    const n=selectedReview.size;
+    $('approveSelectedBtn').textContent='Approve selected ('+n.toLocaleString()+')';
+    $('discardSelectedBtn').textContent='Discard selected ('+n.toLocaleString()+')';
+    $('approveSelectedBtn').disabled=!n||!dictReady;
+    $('discardSelectedBtn').disabled=!n;
+  }
+  function approveSelected(){
+    if(loadFallback){message('The stored archive could not be read, so nothing was changed.','bad');return}
+    if(!dictReady){message('Word list is still loading. Nothing was approved.','warn');return}
+    if(!selectedReview.size) return;
+    const phraseSet=new Set(state.phrases);
+    const allowBefore=new Set(state.allow);
+    const keptBefore=new Set(state.kept);
+    const approved=[];
+    const remaining=[];
+    let dupes=0;
+    for(let i=0;i<state.review.length;i++){
+      const item=state.review[i];
+      if(!selectedReview.has(String(item.id))){remaining.push(item);continue}
+      const text=clean(item.text||item.raw);
+      if(text&&!phraseSet.has(text)){
+        protect(text);
+        phraseSet.add(text);
+        approved.push({item,text});
+      }else{
+        if(text){item.why='duplicate';dupes++}
+        remaining.push(item);
+      }
+    }
+    if(!approved.length){message(dupes?'Those lines are already in the archive and stayed in review.':'Nothing in the selection could be approved.','warn');state.review=remaining;selectedReview.clear();reviewAnchor=null;save();return}
+    for(let i=0;i<approved.length;i++) state.phrases.push(approved[i].text);
+    state.phrases.sort((a,b)=>a.localeCompare(b));
+    state.review=remaining;
+    state.lastAdded=approved.length;
+    state.logs.unshift({at:new Date().toISOString(),source:'BULK REVIEW APPROVAL',scanned:selectedReview.size,added:approved.length,duplicates:dupes,review:0,blank:0});
+    const addedAllow=state.allow.filter(w=>!allowBefore.has(w));
+    const addedKept=state.kept.filter(p=>!keptBefore.has(p));
+    const snapshot={approved,addedAllow,addedKept};
+    selectedReview.clear();reviewAnchor=null;
+    const saved=save();
+    if(!saved) return;
+    const n=approved.length;
+    showToast('Approved '+n.toLocaleString()+' selected line'+(n===1?'':'s')+'.',()=>undoBulkApprove(snapshot));
+    message(n.toLocaleString()+' selected line'+(n===1?'':'s')+' approved'+(dupes?'. '+dupes.toLocaleString()+' already in the archive stayed in review.':'.'),'ok');
+  }
+  function undoBulkApprove(snapshot){
+    const texts=new Set(snapshot.approved.map(x=>x.text));
+    state.phrases=state.phrases.filter(p=>!texts.has(p));
+    for(let i=0;i<snapshot.approved.length;i++) state.review.push(snapshot.approved[i].item);
+    if(snapshot.addedAllow.length){const drop=new Set(snapshot.addedAllow);state.allow=state.allow.filter(w=>!drop.has(w));allowSetCache=null}
+    if(snapshot.addedKept.length){const drop=new Set(snapshot.addedKept);state.kept=state.kept.filter(p=>!drop.has(p))}
+    save();message('Undid the bulk approve.','ok');
+  }
+  function discardSelected(){
+    if(loadFallback){message('The stored archive could not be read, so nothing was changed.','bad');return}
+    if(!selectedReview.size) return;
+    const moved=[], remaining=[];
+    for(let i=0;i<state.review.length;i++){
+      const item=state.review[i];
+      if(selectedReview.has(String(item.id))){item.discardedAt=new Date().toISOString();moved.push(item)}
+      else remaining.push(item);
+    }
+    if(!moved.length){selectedReview.clear();reviewAnchor=null;syncSelectionUI(true);message('Nothing in the selection is still in review.','warn');return}
+    state.review=remaining;
+    state.discarded=moved.concat(state.discarded);
+    selectedReview.clear();reviewAnchor=null;
+    const saved=save();
+    if(!saved) return;
+    const n=moved.length;
+    showToast('Discarded '+n.toLocaleString()+' selected line'+(n===1?'':'s')+'.',()=>{
+      const back=new Set(moved.map(x=>String(x.id)));
+      state.discarded=state.discarded.filter(x=>!back.has(String(x.id)));
+      state.review.push(...moved);
+      save();message('Undid the bulk discard.','ok');
+    });
+    message(n.toLocaleString()+' selected line'+(n===1?'':'s')+' moved to the discarded list. You can restore them.','warn');
   }
   function approve(id){
     if(!dictReady){message('Word list is still loading.','warn');return}
@@ -489,41 +930,369 @@
       ?'Clipboard read is not permitted here. Intake is selected — use Ctrl+V, right-click Paste, or long-press and choose Paste.'
       :'Clipboard is empty. Copy your phrases, then tap Paste text again.','warn');
   }
+  function stashRaw(raw){
+    if(raw==null||raw==='') return true;
+    const slots=[RAW_KEY,RAW_KEY+'_RESET'];
+    for(const key of slots){
+      try{
+        const cur=localStorage.getItem(key);
+        if(cur==null){localStorage.setItem(key,raw);return true}
+        if(cur===raw) return true;
+      }catch(err){return false}
+    }
+    try{localStorage.setItem(RAW_KEY+'_RESET',raw);return true}catch(err){return false}
+  }
+  function linesFromTxt(text){
+    return splitLines(text).map(l=>l.trim()).filter(l=>{
+      if(!l) return false;
+      if(/^===== .* =====$/.test(l)) return false;
+      if(l==='HORUS A-Z PROCESS LOG'||l.startsWith('GENERATED ')||l.startsWith('DATE\tSOURCE\t')) return false;
+      return true;
+    });
+  }
+  async function importBackupFile(file){
+    if(!file) return;
+    let text='';
+    try{text=await file.text()}catch(err){message('Could not read that file.','bad');return}
+    const trimmed=text.replace(/^\uFEFF/,'').trim();
+    const asJson=/\.json$/i.test(file.name||'')||trimmed.startsWith('{')||trimmed.startsWith('[')||trimmed.startsWith('"');
+    let interpreted=null;
+    if(asJson){
+      try{interpreted=interpret(JSON.parse(trimmed))}catch(err){try{interpreted=interpret(trimmed)}catch(e){interpreted=null}}
+      if(!interpreted){message('That JSON is not a HORUS backup this page can read.','bad');return}
+    }else{
+      const phrases=uniquePhrases(linesFromTxt(text).map(clean).filter(Boolean));
+      if(phrases.length) interpreted={phrases,review:[],logs:[],lastAdded:0,totalDupes:0};
+    }
+    if(!interpreted||(!interpreted.phrases.length&&!(interpreted.review&&interpreted.review.length))){message('That file has no phrases or review lines to import.','bad');return}
+    let raw=null;
+    try{raw=localStorage.getItem(KEY)}catch(err){raw=null}
+    if(raw&&!stashRaw(raw)){message('Could not copy the existing browser archive aside, so the import was cancelled.','bad');return}
+    state=applyInterpreted(interpreted);
+    loadFallback=false;
+    allowSetCache=null;
+    selectedReview.clear();reviewAnchor=null;
+    const saved=save();
+    if(saved) message('Backup imported. '+state.phrases.length.toLocaleString()+' phrases in the archive, '+state.review.length.toLocaleString()+' in review.','ok');
+  }
+  const VOW='AEIOU';
+  const HARD_G=new Set(['GET','GETS','GETTING','GIVE','GIVES','GIVEN','GIVING','GIFT','GIFTS','GIRL','GIRLS','GIRD','GIRTH','GEESE','GEAR','GEARS','GILD','GIG','GIGS','GIGGLE','GIDDY','GEEK','GECKO','GEYSER']);
+  const ORDER=['S','K','L','T','M','F','W','B','D','P','R','G','H','N','V','TH','SH','CH','J','SK','Y','Z','VOWEL'];
+  let csBuiltin=null, csArchive=null, csBoth=null, csLoading=null, csSource='builtin', csCur='S', csBaseStat='';
+  function head(w){
+    const t=w.slice(0,2), th=w.slice(0,3);
+    if(['KN','GN','PN','MN'].includes(t)) return 'N';
+    if(t==='WR') return 'R';
+    if(t==='PS'||t==='PT') return 'S';
+    if(th==='SCH') return 'SK';
+    if(t==='PH') return 'F';
+    if(t==='TH'||t==='SH'||t==='CH') return t;
+    if(t==='WH') return 'W';
+    if(t==='QU') return 'K';
+    if(t==='SC') return 'EIY'.includes(w[2])?'S':'SK';
+    if(w[0]==='C') return 'EIY'.includes(w[1])?'S':'K';
+    if(w[0]==='G') return ('EIY'.includes(w[1])&&!HARD_G.has(w))?'J':'G';
+    if(w[0]==='X') return 'Z';
+    return VOW.includes(w[0])?'VOWEL':w[0];
+  }
+  function skel(w){
+    let s=w;
+    s=s.replace(/^KN|^GN|^PN|^MN/,'N').replace(/^WR/,'R').replace(/^PS|^PT/,'S');
+    s=s.replace(/TH/g,'8').replace(/SH/g,'7').replace(/CH/g,'6').replace(/NG/g,'5').replace(/PH/g,'F');
+    s=s.replace(/CK/g,'K').replace(/QU/g,'KW').replace(/X/g,'KS').replace(/GH/g,'');
+    s=s.replace(/SC([EIY])/g,'S$1').replace(/C([EIY])/g,'S$1').replace(/C/g,'K');
+    s=s.replace(/G([EIY])/g,'J$1');
+    s=s.replace(/[AEIOUYWH']/g,'');
+    s=s.replace(/(.)\1+/g,'$1');
+    return s;
+  }
+  const pretty=s=>s.replace(/8/g,'TH').replace(/7/g,'SH').replace(/6/g,'CH').replace(/5/g,'NG');
+  function inside(w){
+    const s=skel(w);
+    return new Set(s.slice(1).split('').map(c=>pretty(c)));
+  }
+  function indexRaw(text){
+    const WORDS=[], CNT={}, HEAD={}, SKEL={}, FAM={}, BYHEAD={}, BYIN={};
+    const lines=text.split('\n');
+    for(let i=0;i<lines.length;i++){
+      const l=lines[i];
+      const sp=l.lastIndexOf(' ');
+      if(sp<1) continue;
+      const w=l.slice(0,sp), c=+l.slice(sp+1);
+      if(!w||!c) continue;
+      WORDS.push(w); CNT[w]=c;
+      const h=head(w); HEAD[w]=h;
+      (BYHEAD[h]=BYHEAD[h]||[]).push(w);
+      const k=skel(w); SKEL[w]=k;
+      (FAM[k]=FAM[k]||[]).push(w);
+      inside(w).forEach(sound=>{if(sound!==h) (BYIN[sound]=BYIN[sound]||[]).push(w)});
+    }
+    return {WORDS,CNT,HEAD,SKEL,FAM,BYHEAD,BYIN};
+  }
+  function archiveSoundIndex(){
+    if(csArchive&&csArchive.stamp===phraseStamp) return csArchive;
+    const WORDS=[], CNT={}, HEAD={}, SKEL={}, FAM={}, BYHEAD={}, BYIN={}, hits={};
+    for(let p=0;p<state.phrases.length;p++){
+      const phrase=state.phrases[p];
+      const parts=wordsOf(phrase);
+      const sounds=new Set();
+      const seen=new Set();
+      for(let i=0;i<parts.length;i++){
+        const w=parts[i];
+        if(!w||seen.has(w)) continue;
+        seen.add(w);
+        const h=head(w);
+        sounds.add(h);
+        inside(w).forEach(sound=>sounds.add(sound));
+        if(CNT[w]){CNT[w]++;continue}
+        CNT[w]=1; WORDS.push(w); HEAD[w]=h;
+        const k=skel(w); SKEL[w]=k;
+        (FAM[k]=FAM[k]||[]).push(w);
+      }
+      sounds.forEach(sound=>{(hits[sound]=hits[sound]||[]).push(phrase)});
+    }
+    WORDS.forEach(w=>{
+      const h=HEAD[w];
+      (BYHEAD[h]=BYHEAD[h]||[]).push(w);
+      inside(w).forEach(sound=>{if(sound!==h) (BYIN[sound]=BYIN[sound]||[]).push(w)});
+    });
+    csArchive={WORDS,CNT,HEAD,SKEL,FAM,BYHEAD,BYIN,hits,stamp:phraseStamp};
+    csBoth=null;
+    return csArchive;
+  }
+  function mergeIndex(a,b){
+    const WORDS=[], CNT={}, HEAD={}, SKEL={}, FAM={}, BYHEAD={}, BYIN={};
+    [a,b].forEach(src=>{
+      src.WORDS.forEach(w=>{
+        if(CNT[w]==null){
+          WORDS.push(w); HEAD[w]=src.HEAD[w]; SKEL[w]=src.SKEL[w]; CNT[w]=0;
+          (FAM[src.SKEL[w]]=FAM[src.SKEL[w]]||[]).push(w);
+        }
+        CNT[w]+=(src.CNT[w]||0);
+      });
+    });
+    WORDS.forEach(w=>{
+      const h=HEAD[w];
+      (BYHEAD[h]=BYHEAD[h]||[]).push(w);
+      inside(w).forEach(sound=>{if(sound!==h) (BYIN[sound]=BYIN[sound]||[]).push(w)});
+    });
+    return {WORDS,CNT,HEAD,SKEL,FAM,BYHEAD,BYIN,stamp:phraseStamp};
+  }
+  function csActiveIndex(){
+    if(csSource==='archive') return archiveSoundIndex();
+    if(csSource==='both'){
+      if(!csBoth||csBoth.stamp!==phraseStamp) csBoth=mergeIndex(csBuiltin,archiveSoundIndex());
+      return csBoth;
+    }
+    return csBuiltin;
+  }
+  function csChips(box,list,sound,mark,idx){
+    const top=list.slice().sort((a,b)=>(idx.CNT[b]||0)-(idx.CNT[a]||0)).slice(0,300);
+    const safe=sound?sound.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'):'';
+    box.innerHTML=top.map(w=>{
+      let disp=w;
+      if(mark&&safe&&sound.length<=2){
+        const re=new RegExp('('+safe+')','g');
+        disp=w.slice(0,1)+w.slice(1).replace(re,'<em>$1</em>');
+      }
+      return '<span class="cs-w" data-w="'+w+'">'+disp+'<i>'+(idx.CNT[w]||0).toLocaleString()+'</i></span>';
+    }).join('');
+    box.querySelectorAll('.cs-w').forEach(el=>el.onclick=()=>csLookup(el.dataset.w));
+  }
+  function pickSound(sound,el){
+    if(!csBuiltin) return;
+    csCur=sound;
+    const idx=csActiveIndex();
+    document.querySelectorAll('#csSounds .cs-sd').forEach(x=>x.classList.remove('on'));
+    if(el) el.classList.add('on');
+    const front=idx.BYHEAD[sound]||[], inner=idx.BYIN[sound]||[];
+    const uses=list=>list.reduce((sum,w)=>sum+(idx.CNT[w]||0),0);
+    $('csAn').textContent=front.length.toLocaleString()+' words begin on this sound · '+uses(front).toLocaleString()+' uses';
+    $('csCn').textContent=inner.length.toLocaleString()+' words carry it further in · '+uses(inner).toLocaleString()+' uses';
+    csChips($('csAw'),front,sound,false,idx);
+    csChips($('csCw'),inner,sound,true,idx);
+    const lines=(archiveSoundIndex().hits[sound])||[];
+    $('csPn').textContent=lines.length.toLocaleString()+' archive line'+(lines.length===1?'':'s');
+    const box=$('csPhrases');
+    box.replaceChildren();
+    if(!lines.length){
+      const empty=document.createElement('div');empty.className='empty';empty.textContent='No archive lines carry this sound yet.';box.appendChild(empty);
+    }else{
+      lines.slice(0,80).forEach(text=>{
+        const r=document.createElement('div');r.className='row';
+        const s=document.createElement('span');s.textContent=text;r.appendChild(s);box.appendChild(r);
+      });
+      if(lines.length>80){
+        const more=document.createElement('div');more.className='empty';
+        more.textContent='Showing the first 80 of '+lines.length.toLocaleString()+'.';
+        box.appendChild(more);
+      }
+    }
+  }
+  function csLookup(raw){
+    if(!csBuiltin) return;
+    const idx=csActiveIndex();
+    const w=(raw||'').toUpperCase().replace(/[^A-Z]/g,'');
+    const box=$('csLook');
+    if(!w){box.hidden=true;box.innerHTML='';return}
+    const known=idx.CNT[w]!==undefined;
+    const h=head(w), k=skel(w);
+    const fam=(idx.FAM[k]||[]).filter(x=>x!==w).sort((a,b)=>(idx.CNT[b]||0)-(idx.CNT[a]||0));
+    const all=(idx.BYHEAD[h]||[]).filter(x=>x!==w).sort((a,b)=>(idx.CNT[b]||0)-(idx.CNT[a]||0)).slice(0,60);
+    const con=(idx.BYIN[h]||[]).filter(x=>x!==w).sort((a,b)=>(idx.CNT[b]||0)-(idx.CNT[a]||0)).slice(0,40);
+    const chip=x=>'<span class="cs-w" data-w="'+x+'">'+x+'<i>'+(idx.CNT[x]||0).toLocaleString()+'</i></span>';
+    box.hidden=false;
+    box.innerHTML=
+      '<div class="cs-kv"><b>The word</b><div class="v">'+w+'</div><p>'+(known?'used '+(idx.CNT[w]||0).toLocaleString()+' times in this list':'not in your list — shown anyway, by rule')+'</p></div>'+
+      '<div class="cs-kv"><b>Opening sound</b><div class="v">'+(h==='VOWEL'?'a vowel':h)+'</div><p>this is what it alliterates on — the letter it is spelled with may differ</p></div>'+
+      '<div class="cs-kv"><b>Consonant skeleton</b><div class="v">'+k.split('').map(c=>pretty(c)).join(' · ')+'</div><p>the bones left when the vowels are taken out</p></div>'+
+      '<div class="cs-kv"><b>Same skeleton — '+fam.length+' in this list</b>'+(fam.length?'<div>'+fam.slice(0,60).map(chip).join('')+'</div>':'<p>none — this word stands alone on its bones</p>')+'</div>'+
+      '<div class="cs-kv"><b>Alliterates with it — front sound '+(h==='VOWEL'?'(vowel)':h)+'</b><div>'+all.map(chip).join('')+'</div></div>'+
+      '<div class="cs-kv"><b>Consonance with it — same sound, further in</b><div>'+con.map(chip).join('')+'</div></div>';
+    box.querySelectorAll('.cs-w').forEach(el=>el.onclick=()=>{csLookup(el.dataset.w);box.scrollIntoView({block:'nearest'})});
+  }
+  function buildSoundChips(){
+    const idx=csActiveIndex();
+    const sd=$('csSounds');
+    sd.replaceChildren();
+    ORDER.forEach(sound=>{
+      const n=(idx.BYHEAD[sound]||[]).length;
+      if(!n) return;
+      const d=document.createElement('button');
+      d.type='button'; d.className='cs-sd';
+      d.innerHTML='<b>'+(sound==='VOWEL'?'A E I':sound)+'</b><small>'+n.toLocaleString()+'</small>';
+      d.onclick=()=>pickSound(sound,d);
+      sd.appendChild(d);
+    });
+  }
+  function refreshConsonant(){
+    if(!csBuiltin) return;
+    const arch=state.phrases.length.toLocaleString();
+    $('csStat').textContent=csBaseStat+' · '+arch+' archive phrases in this browser';
+    buildSoundChips();
+    const chips=[...document.querySelectorAll('#csSounds .cs-sd')];
+    const el=chips.find(node=>{
+      const label=node.querySelector('b');
+      return label&&(label.textContent===csCur||(csCur==='VOWEL'&&label.textContent==='A E I'));
+    })||chips[0];
+    if(!el) return;
+    const label=el.querySelector('b').textContent;
+    pickSound(label==='A E I'?'VOWEL':label, el);
+  }
+  function openConsonant(){
+    if(csBuiltin){refreshConsonant();return}
+    if(csLoading) return;
+    $('csStat').textContent='Loading consonant list…';
+    csLoading=fetch('consonant-words.txt',{cache:'force-cache'}).then(res=>{
+      if(!res.ok) throw new Error(String(res.status));
+      return res.text();
+    }).then(text=>{
+      csBuiltin=indexRaw(text);
+      csLoading=null;
+      const families=Object.keys(csBuiltin.FAM).filter(k=>csBuiltin.FAM[k].length>1).length;
+      const uses=csBuiltin.WORDS.reduce((sum,w)=>sum+csBuiltin.CNT[w],0);
+      csBaseStat=csBuiltin.WORDS.length.toLocaleString()+' distinct words · '+uses.toLocaleString()+' uses · '+families.toLocaleString()+' skeleton families';
+      refreshConsonant();
+    }).catch(()=>{
+      csLoading=null;
+      $('csStat').textContent='The consonant list could not be loaded.';
+    });
+  }
   $('pasteBtn').onclick=pasteFromClipboard;
-  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}if(!dictReady){message('Word list is still loading. Your text is still in the box.','warn');return}processLines(splitLines(v),'PASTE');$('intake').value=''};
+  $('processBtn').onclick=()=>{
+    const v=$('intake').value;
+    if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}
+    if(!dictReady){message('Word list is still loading. Your text is still in the box.','warn');return}
+    if(processLines(splitLines(v),'PASTE')) $('intake').value='';
+  };
   $('clearInputBtn').onclick=()=>{$('intake').value='';message('Intake cleared; saved archive unchanged.')};
   $('sampleBtn').onclick=()=>{$('intake').value='SILVER SUN SPEAKS\nGILDED GARDENS GLOW\nSILVER SUN SPEAKS\nLONE\nRADIANT RIVERS RISE';message('Tiny test loaded. Press PROCESS & SORT A–Z.')};
   $('search').oninput=render;$('clearSearchBtn').onclick=()=>{$('search').value='';activeLetter='ALL';render()};
   $('copyViewBtn').onclick=()=>copy(visible().join('\n'));$('exportViewBtn').onclick=()=>download(activeLetter==='ALL'?'VISIBLE_AZ_RESULTS.txt':activeLetter+'.txt',visible().join('\n'));
-  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');reviewFilter=b.dataset.review;render()});
+  document.querySelectorAll('#sectionTabs .tab').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#sectionTabs .tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const section=b.dataset.section;
+    $('desk').hidden=section!=='desk';
+    $('consonant').hidden=section!=='consonant';
+    if(section==='consonant') openConsonant();
+  });
+  document.querySelectorAll('#reviewTabs .tab').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#reviewTabs .tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    reviewFilter=b.dataset.review||'all';
+    render();
+  });
+  $('selectAllReview').onclick=()=>{
+    const rows=visibleReview();
+    let chosen=0;
+    for(let i=0;i<rows.length;i++) if(selectedReview.has(String(rows[i].id))) chosen++;
+    const allOn=rows.length>0&&chosen===rows.length;
+    for(let i=0;i<rows.length;i++){
+      const id=String(rows[i].id);
+      if(allOn) selectedReview.delete(id); else selectedReview.add(id);
+    }
+    reviewAnchor=rows.length?String(rows[rows.length-1].id):null;
+    syncSelectionUI(false);
+  };
+  $('approveSelectedBtn').onclick=approveSelected;
+  $('discardSelectedBtn').onclick=discardSelected;
+  $('clearSelectionBtn').onclick=()=>{selectedReview.clear();reviewAnchor=null;syncSelectionUI(false)};
   $('approveAllBtn').onclick=approveVisible;$('exportReviewBtn').onclick=()=>download('REVIEW_NOT_DELETED.txt',visibleReview().map(x=>`${x.why}\t${x.text||x.raw}\t${x.source}`).join('\n'));
   $('exportDiscardBtn').onclick=()=>download('DISCARDED_RESTORABLE.txt',state.discarded.map(x=>`${x.why}\t${x.text||x.raw}\t${x.source}`).join('\n'));
   $('restoreDiscardBtn').onclick=restoreAllDiscarded;
   $('findJunkBtn').onclick=showJunk;$('moveJunkBtn').onclick=moveAllJunk;
   $('masterBtn').onclick=()=>download('MASTER_AZ_INDEX.txt',state.phrases.join('\n'));$('azBtn').onclick=()=>download('A_Z_TEXT_BUNDLE.txt',azBundle());$('logBtn').onclick=()=>download('PROCESS_LOG.txt',logText());
   $('backupBtn').onclick=()=>download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');$('sealedBtn').onclick=sealed;
-  $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.phrases)||!Array.isArray(x.review))throw Error();state=loadFrom(x);save();message('Backup restored successfully.','ok')}catch{message('That file is not a valid HORUS backup.','bad')}e.target.value=''};
-  function loadFrom(x){const s=Object.assign(fresh(),x);if(!Array.isArray(s.discarded)) s.discarded=[];if(!Array.isArray(s.allow)) s.allow=[];if(!Array.isArray(s.kept)) s.kept=[];if(!Array.isArray(s.logs)) s.logs=[];s.version=2;return s}
+  $('importBtn').onclick=()=>$('importFile').click();
+  $('restoreBtn').onclick=()=>$('importFile').click();
+  $('importFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f) await importBackupFile(f)};
+  document.querySelectorAll('[data-cs]').forEach(b=>b.onclick=()=>{
+    csSource=b.dataset.cs||'builtin';
+    document.querySelectorAll('[data-cs]').forEach(x=>x.classList.toggle('on',x===b));
+    if(csBuiltin) refreshConsonant();
+  });
+  $('csQ').addEventListener('input',e=>csLookup(e.target.value));
   const dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>readFiles(e.dataTransfer.files));$('files').onchange=e=>readFiles(e.target.files);
   async function readFiles(files){const all=[];for(const f of files){try{all.push(...splitLines(await f.text()))}catch{message(`Could not read ${f.name}.`,'bad')}}if(all.length)processLines(all,[...files].map(x=>x.name).join(', '));$('files').value=''}
-  const d=$('confirmDialog');$('resetBtn').onclick=()=>d.showModal();$('cancelReset').onclick=()=>d.close();$('confirmReset').onclick=()=>{state=fresh();localStorage.removeItem(KEY);d.close();render();message('Local browser archive reset. GitHub and HP files were not changed.','warn')};
-  window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});
-  async function loadDict(){
-    try{
-      const res=await fetch('words-scowl.txt',{cache:'force-cache'});
-      if(!res.ok) throw new Error(String(res.status));
-      const text=await res.text();
-      text.split(/\n/).forEach(line=>{const w=line.trim().toLowerCase();if(w&&w[0]!=='#') DICT.add(w)});
-      dictReady=DICT.size>1000;
-      if(!dictReady) throw new Error('short list');
-      message('Word list ready ('+DICT.size.toLocaleString()+' words). Paste a line, then process.','ok');
-    }catch(err){
-      dictReady=false;
-      message('Word list failed to load. Nothing can enter the archive until it does.','bad');
-    }
-    render();
+  const d=$('confirmDialog');$('resetBtn').onclick=()=>d.showModal();$('cancelReset').onclick=()=>d.close();
+  $('confirmReset').onclick=()=>{
+    let raw=null;
+    try{raw=localStorage.getItem(KEY)}catch(err){raw=null}
+    if(raw&&!stashRaw(raw)){d.close();message('Could not copy the archive aside, so it was not reset.','bad');return}
+    try{localStorage.removeItem(KEY)}catch(err){}
+    state=fresh();
+    loadFallback=false;
+    allowSetCache=null;
+    selectedReview.clear();reviewAnchor=null;
+    junkCache=null;junkPromise=null;junkGen++;phraseStamp++;
+    d.close();render();
+    message('Local browser archive reset. The previous save was copied aside in this browser when there was room. GitHub and HP files were not changed.','warn');
+  };
+  window.addEventListener('storage',e=>{if(e.key===KEY){state=load();allowSetCache=null;junkCache=null;junkPromise=null;junkGen++;phraseStamp++;selectedReview.clear();render()}});
+  function loadDict(){
+    if(dictPromise) return dictPromise;
+    dictPromise=(async()=>{
+      try{
+        const res=await fetch('words-scowl.txt',{cache:'force-cache'});
+        if(!res.ok) throw new Error(String(res.status));
+        const text=await res.text();
+        text.split(/\n/).forEach(line=>{const w=line.trim().toLowerCase();if(w&&w[0]!=='#') DICT.add(w)});
+        dictReady=DICT.size>1000;
+        if(!dictReady) throw new Error('short list');
+        if(!loadFallback) message('Word list ready ('+DICT.size.toLocaleString()+' words). Paste a line, then process.','ok');
+      }catch(err){
+        dictReady=false;
+        if(!loadFallback) message('Word list failed to load. Nothing can enter the archive until it does.','bad');
+      }
+      render();
+      return dictReady;
+    })();
+    return dictPromise;
   }
-  render();loadDict();
+  render();
+  if(loadFallback) message('The stored archive could not be read, so it was not overwritten. Import a backup to replace it.','bad');
+  loadDict();
 })();
 </script>
 </body>
