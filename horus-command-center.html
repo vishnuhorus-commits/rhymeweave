@@ -40,7 +40,11 @@
     .search{display:flex;gap:8px}.search input{flex:1;min-width:0;border:1px solid rgba(217,170,82,.3);border-radius:11px;background:#041617;color:var(--cream);padding:11px 12px;outline:none}
     .alphabet{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin:11px 0}.letter{border:1px solid rgba(217,170,82,.25);border-radius:9px;background:#0c2b2c;color:var(--muted);padding:7px 2px;cursor:pointer;font-weight:800}.letter.on{background:var(--gold);color:#1b1306}.letter em{display:block;font:normal 9px/1 system-ui;margin-top:2px;opacity:.75}
     .results{height:312px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
-    .row{display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.06);padding:8px}.row:last-child{border:0}.row span{flex:1;word-break:break-word}.mini{border:0;border-radius:7px;background:#123c3d;color:var(--gold2);padding:4px 7px;cursor:pointer;font-size:11px}
+    .row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.06);padding:8px}.row:last-child{border:0}.row span{flex:1;min-width:140px;word-break:break-word}.mini{border:0;border-radius:7px;background:#123c3d;color:var(--gold2);padding:6px 8px;cursor:pointer;font-size:12px}
+    .junkpanel{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--muted)}.junkpanel b{color:var(--gold2)}
+    .allow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;color:var(--muted);align-items:center}
+    .toast{position:fixed;z-index:40;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;max-width:min(560px,calc(100% - 24px));border:1px solid var(--line);border-radius:14px;background:#102826;color:var(--cream);padding:12px 14px;box-shadow:var(--shadow)}
+    .toast[hidden]{display:none}
     .empty{display:grid;place-items:center;height:100%;color:#6f9290;text-align:center;padding:25px}
     .tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.tab{white-space:nowrap;border:1px solid rgba(217,170,82,.25);border-radius:10px;background:#0b2829;color:var(--muted);padding:8px 11px;cursor:pointer}.tab.on{color:#1b1306;background:var(--gold);font-weight:800}
     .review{height:246px;overflow:auto;border:1px solid rgba(217,170,82,.22);border-radius:13px;background:#041617;padding:7px}
@@ -67,6 +71,9 @@
     <div class="stat"><b id="lastStat">0</b><span>Added last drop</span></div>
     <div class="stat"><b id="dupeStat">0</b><span>Duplicates caught</span></div>
     <div class="stat"><b id="reviewStat">0</b><span>Review preserved</span></div>
+    <div class="stat"><b id="junkStat">0</b><span>Junk in archive</span></div>
+    <div class="stat"><b id="fewStat">0</b><span>Too few words</span></div>
+    <div class="stat"><b id="unknownStat">0</b><span>Unknown word</span></div>
   </section>
 
   <div class="grid">
@@ -88,14 +95,20 @@
       <div class="search"><input id="search" type="search" placeholder="Search every saved phrase…" aria-label="Search archive"><button class="btn" id="clearSearchBtn">Clear</button></div>
       <div class="alphabet" id="alphabet" aria-label="Filter by first letter"></div>
       <div class="results" id="results"></div>
-      <div class="actions"><button class="btn" id="copyViewBtn">Copy visible</button><button class="btn" id="exportViewBtn">Export visible</button></div>
+      <div class="actions"><button class="btn" id="copyViewBtn" type="button">Copy visible</button><button class="btn" id="exportViewBtn" type="button">Export visible</button><button class="btn" id="findJunkBtn" type="button">Find junk</button></div>
+      <div class="junkpanel" id="junkPanel" hidden>
+        <b id="junkSummary">Junk</b>
+        <div id="junkLetters"></div>
+        <div class="actions"><button class="btn" id="moveJunkBtn" type="button">Move all 0 to review</button></div>
+      </div>
     </section>
 
     <section class="card">
       <h2>Review Station <span class="tag">Never deleted</span></h2>
-      <div class="tabs"><button class="tab on" data-review="all">All review</button><button class="tab" data-review="duplicate">Duplicates</button><button class="tab" data-review="one-word">One word</button><button class="tab" data-review="non-a-z">Non A–Z</button></div>
+      <div class="tabs"><button class="tab on" data-review="all">All review</button><button class="tab" data-review="two-word">Two word</button><button class="tab" data-review="under 3">Under 3</button><button class="tab" data-review="unknown">Unknown word</button><button class="tab" data-review="removed by hand">Removed</button><button class="tab" data-review="duplicate">Duplicates</button><button class="tab" data-review="one-word">One word</button><button class="tab" data-review="non-a-z">Non A–Z</button><button class="tab" data-review="discarded">Discarded</button></div>
       <div class="review" id="review"></div>
-      <div class="actions"><button class="btn safe" id="approveAllBtn">Approve visible</button><button class="btn" id="exportReviewBtn">Export review</button></div>
+      <div class="actions"><button class="btn safe" id="approveAllBtn" type="button">Approve visible</button><button class="btn" id="exportReviewBtn" type="button">Export review</button><button class="btn" id="exportDiscardBtn" type="button">Export discarded</button><button class="btn safe" id="restoreDiscardBtn" type="button">Restore discarded</button></div>
+      <div class="allow" id="allowBox" aria-label="Allowed words"></div>
     </section>
 
     <section class="card">
@@ -112,10 +125,11 @@
       <div style="height:14px"></div>
       <h2>Guardrails</h2>
       <ul class="rulelist">
-        <li><strong>Uppercase</strong> letters and spaces</li>
-        <li><strong>Two or more words</strong> for automatic acceptance</li>
+        <li><strong>Uppercase</strong> letters and spaces. A line stays one entry</li>
+        <li><strong>Three content words</strong> starting with the same letter. a, an, the, of, and, to, in, on, and the other small joiners do not count</li>
+        <li><strong>Known English words</strong> from the offline SCOWL list, plus words you approve</li>
         <li><strong>Exact deduplication</strong> across every drop</li>
-        <li><strong>Review preservation</strong> for anything not accepted</li>
+        <li><strong>Nothing deleted</strong>. Short lines, unknown words, and hand removals stay in Review or the restorable Discarded list</li>
         <li><strong>Device storage</strong> with manual backup and restore</li>
       </ul>
       <div class="actions"><button class="btn danger" id="resetBtn">Reset local archive…</button></div>
@@ -129,24 +143,96 @@
   <p>This clears only the saved copy inside this browser. Export a backup first if you want to recover it later. Nothing in GitHub or on your HP is changed.</p>
   <div class="actions"><button class="btn" id="cancelReset">Cancel</button><button class="btn danger" id="confirmReset">Reset local copy</button></div>
 </dialog>
+<div class="toast" id="toast" hidden role="status"><span id="toastText">Moved to review.</span><button class="btn" id="toastUndo" type="button">Undo</button></div>
 
 <script>
 (() => {
   'use strict';
   const KEY='HORUS_AZ_COMMAND_CENTER_V1';
   const LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const STOP=new Set('A AN THE OF AND TO IN ON FOR WITH FROM BY AT AS OR BUT NOR INTO ONTO UPON OVER UNDER OUT UP OFF PER VIA THAN'.split(' '));
+  const DICT=new Set();
+  let dictReady=false;
   const $=id=>document.getElementById(id);
-  const fresh=()=>({version:1,phrases:[],review:[],logs:[],lastAdded:0,totalDupes:0});
-  let state=load(), activeLetter='ALL', reviewFilter='all';
+  const fresh=()=>({version:2,phrases:[],review:[],discarded:[],allow:[],kept:[],logs:[],lastAdded:0,totalDupes:0});
+  let state=load(), activeLetter='ALL', reviewFilter='all', undoTimer=0;
 
-  function load(){try{const x=JSON.parse(localStorage.getItem(KEY));return x&&Array.isArray(x.phrases)&&Array.isArray(x.review)?Object.assign(fresh(),x):fresh()}catch{return fresh()}}
+  function load(){
+    try{
+      const x=JSON.parse(localStorage.getItem(KEY));
+      if(!x||!Array.isArray(x.phrases)||!Array.isArray(x.review)) return fresh();
+      const s=Object.assign(fresh(),x);
+      if(!Array.isArray(s.discarded)) s.discarded=[];
+      if(!Array.isArray(s.allow)) s.allow=[];
+      if(!Array.isArray(s.kept)) s.kept=[];
+      if(!Array.isArray(s.logs)) s.logs=[];
+      s.version=2;
+      return s;
+    }catch{return fresh()}
+  }
   function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-  function clean(raw){return String(raw).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim()}
-  function reason(text){if(!text)return 'blank';if(!/^[A-Z]/.test(text))return 'non-a-z';if(text.split(' ').length<2)return 'one-word';return ''}
-  function addReview(raw,normalized,why,source){state.review.push({id:crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random(),raw:String(raw),text:normalized,why,source,at:new Date().toISOString()})}
+  function clean(raw){return String(raw).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/['’]/g,'').toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim()}
+  function stems(word){
+    const w=String(word).toLowerCase().replace(/[^a-z]/g,'');
+    const out=[];
+    if(w.length>2&&w.endsWith('s')) out.push(w.slice(0,-1));
+    if(w.length>3&&w.endsWith('es')) out.push(w.slice(0,-2));
+    if(w.length>4&&w.endsWith('ies')) out.push(w.slice(0,-3)+'y');
+    if(w.length>3&&w.endsWith('ed')){out.push(w.slice(0,-2));out.push(w.slice(0,-2)+'e');if(w.length>4&&w[w.length-3]===w[w.length-4]) out.push(w.slice(0,-3))}
+    if(w.length>4&&w.endsWith('ing')){out.push(w.slice(0,-3));out.push(w.slice(0,-3)+'e');if(w.length>5&&w[w.length-4]===w[w.length-5]) out.push(w.slice(0,-4))}
+    return out.filter(s=>s.length>1);
+  }
+  function inDict(word){return DICT.has(String(word).toLowerCase())}
+  function allowed(word){return state.allow.includes(String(word).toLowerCase())}
+  function isKnown(word){
+    const w=String(word).toLowerCase().replace(/[^a-z]/g,'');
+    if(!w) return false;
+    if(allowed(w)||inDict(w)) return true;
+    return stems(w).some(s=>allowed(s)||inDict(s));
+  }
+  function wordsOf(text){return String(text).split(' ').filter(Boolean)}
+  function unknownTokens(text){return wordsOf(text).filter(w=>!isKnown(w))}
+  function alliterationCount(text){
+    const groups={};
+    wordsOf(text).forEach(w=>{if(STOP.has(w)||!w[0]) return;groups[w[0]]=(groups[w[0]]||0)+1});
+    return Math.max(0,...Object.values(groups),0);
+  }
+  function gate(text){
+    if(!text) return 'blank';
+    if(!/^[A-Z]/.test(text)) return 'non-a-z';
+    if(!dictReady) return 'word list loading';
+    const unknown=unknownTokens(text);
+    if(unknown.length) return 'unknown word: '+unknown.join(', ');
+    const best=alliterationCount(text);
+    if(best>=3) return '';
+    if(best===2) return 'two-word';
+    return 'under 3';
+  }
+  function tooFew(why){return why==='two-word'||why==='under 3'||why==='one-word'}
+  function isUnknown(why){return String(why||'').startsWith('unknown word')}
+  function junkList(){return dictReady?state.phrases.filter(p=>!state.kept.includes(p)&&gate(p)) : []}
+  function learn(text){
+    wordsOf(text).forEach(w=>{
+      const k=w.toLowerCase().replace(/[^a-z]/g,'');
+      if(k.length<2) return;
+      if(inDict(k)||stems(k).some(inDict)) return;
+      if(!state.allow.includes(k)) state.allow.push(k);
+    });
+  }
+  function protect(text){learn(text);if(gate(text)&&!state.kept.includes(text)) state.kept.push(text)}
+  function newId(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()}
+  function addReview(raw,normalized,why,source){state.review.push({id:newId(),raw:String(raw),text:normalized,why,source,at:new Date().toISOString()})}
   function processLines(lines,source='PASTE'){
+    if(!dictReady){message('Word list is still loading. Nothing was added.','warn');return}
     const known=new Set(state.phrases), batch=new Set();let added=0,dupes=0,reviewed=0,blanks=0;
-    for(const raw of lines){const text=clean(raw);if(!text){blanks++;continue}const why=reason(text);if(why){addReview(raw,text,why,source);reviewed++;continue}if(known.has(text)||batch.has(text)){addReview(raw,text,'duplicate',source);dupes++;reviewed++;continue}batch.add(text);known.add(text);state.phrases.push(text);added++}
+    for(const raw of lines){
+      const text=clean(raw);
+      if(!text){blanks++;continue}
+      const why=gate(text);
+      if(why){addReview(raw,text,why,source);reviewed++;continue}
+      if(known.has(text)||batch.has(text)){addReview(raw,text,'duplicate',source);dupes++;reviewed++;continue}
+      batch.add(text);known.add(text);state.phrases.push(text);added++;
+    }
     state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;state.totalDupes+=dupes;
     state.logs.unshift({at:new Date().toISOString(),source,scanned:lines.length,added,duplicates:dupes,review:reviewed,blank:blanks});
     save();message(`Complete: ${added} new · ${dupes} duplicates · ${reviewed} review · ${blanks} blank`,added?'ok':'warn');
@@ -154,18 +240,142 @@
   function message(text,type=''){const n=$('notice');n.textContent=text;n.className='notice '+type}
   function counts(){const c=Object.fromEntries(LETTERS.map(x=>[x,0]));state.phrases.forEach(x=>{if(c[x[0]]!==undefined)c[x[0]]++});return c}
   function visible(){const q=$('search').value.trim().toUpperCase();return state.phrases.filter(x=>(activeLetter==='ALL'||x[0]===activeLetter)&&(!q||x.includes(q)))}
-  function visibleReview(){return state.review.filter(x=>reviewFilter==='all'||x.why===reviewFilter)}
+  function matchesReview(item){
+    if(reviewFilter==='all') return true;
+    if(reviewFilter==='unknown') return isUnknown(item.why);
+    return item.why===reviewFilter;
+  }
+  function visibleReview(){return state.review.filter(matchesReview)}
   function render(){
+    const junk=junkList();
+    const few=state.review.filter(x=>tooFew(x.why)).length;
+    const unknown=state.review.filter(x=>isUnknown(x.why)).length;
     $('totalStat').textContent=state.phrases.length.toLocaleString();$('lastStat').textContent=state.lastAdded.toLocaleString();$('dupeStat').textContent=state.totalDupes.toLocaleString();$('reviewStat').textContent=state.review.length.toLocaleString();
+    $('junkStat').textContent=dictReady?junk.length.toLocaleString():'…';$('fewStat').textContent=few.toLocaleString();$('unknownStat').textContent=unknown.toLocaleString();
     const c=counts(), a=$('alphabet');a.innerHTML='';
     [['ALL',state.phrases.length],...LETTERS.map(x=>[x,c[x]])].forEach(([l,n])=>{const b=document.createElement('button');b.className='letter '+(activeLetter===l?'on':'');b.innerHTML=`${l}<em>${n}</em>`;b.onclick=()=>{activeLetter=l;render()};a.appendChild(b)});
     const list=visible();$('viewTag').textContent=(activeLetter==='ALL'?'All letters':activeLetter)+' · '+list.length;
-    const box=$('results');box.innerHTML='';if(!list.length)box.innerHTML='<div class="empty">No matching phrases yet.<br>Process a tiny test or add your own lines.</div>';else list.slice(0,3000).forEach(text=>{const r=document.createElement('div');r.className='row';const s=document.createElement('span');s.textContent=text;const b=document.createElement('button');b.className='mini';b.textContent='COPY';b.onclick=()=>copy(text);r.append(s,b);box.appendChild(r)});
-    const rv=visibleReview(), rb=$('review');rb.innerHTML='';if(!rv.length)rb.innerHTML='<div class="empty">Review is clear for this filter.</div>';else rv.slice(0,3000).forEach(item=>{const r=document.createElement('div');r.className='row';const s=document.createElement('span');s.textContent=item.text||item.raw;const why=document.createElement('small');why.className='why';why.textContent=item.why+' · '+item.source;s.appendChild(why);const b=document.createElement('button');b.className='mini';b.textContent='APPROVE';b.onclick=()=>approve(item.id);r.append(s,b);rb.appendChild(r)});
+    const box=$('results');box.innerHTML='';
+    if(!list.length) box.innerHTML='<div class="empty">No matching phrases yet.<br>Process a tiny test or add your own lines.</div>';
+    else list.slice(0,3000).forEach(text=>{
+      const r=document.createElement('div');r.className='row';
+      const s=document.createElement('span');s.textContent=text;
+      const b=document.createElement('button');b.className='mini';b.type='button';b.textContent='COPY';b.onclick=()=>copy(text);
+      const mv=document.createElement('button');mv.className='mini';mv.type='button';mv.textContent='Move to review';mv.onclick=()=>moveToReview(text);
+      r.append(s,b,mv);box.appendChild(r);
+    });
+    const discardedView=reviewFilter==='discarded';
+    $('approveAllBtn').hidden=discardedView;
+    const rb=$('review');rb.innerHTML='';
+    const rows=discardedView?state.discarded:visibleReview();
+    if(!rows.length) rb.innerHTML='<div class="empty">'+(discardedView?'Discarded list is empty. Nothing has been thrown away.':'Review is clear for this filter.')+'</div>';
+    else rows.slice(0,3000).forEach(item=>{
+      const r=document.createElement('div');r.className='row';
+      const s=document.createElement('span');s.textContent=item.text||item.raw;
+      const why=document.createElement('small');why.className='why';why.textContent=(item.why||'discarded')+' · '+(item.source||'');s.appendChild(why);
+      if(discardedView){
+        const back=document.createElement('button');back.className='mini';back.type='button';back.textContent='RESTORE';back.onclick=()=>restoreDiscard(item.id);
+        r.append(s,back);
+      }else{
+        const ok=document.createElement('button');ok.className='mini';ok.type='button';ok.textContent='APPROVE';ok.onclick=()=>approve(item.id);
+        const no=document.createElement('button');no.className='mini';no.type='button';no.textContent='DISCARD';no.onclick=()=>discard(item.id);
+        r.append(s,ok,no);
+      }
+      rb.appendChild(r);
+    });
+    const allow=$('allowBox');allow.innerHTML='';
+    const label=document.createElement('span');label.textContent=state.allow.length?'Allowed words':'Approve an unknown word and it is added here.';allow.appendChild(label);
+    state.allow.forEach(w=>{const b=document.createElement('button');b.className='mini';b.type='button';b.textContent=w+' ×';b.title='Remove '+w+' from the allow-list';b.onclick=()=>{state.allow=state.allow.filter(x=>x!==w);save()};allow.appendChild(b)});
   }
-  function approve(id){const i=state.review.findIndex(x=>x.id===id);if(i<0)return;const item=state.review[i],text=clean(item.text||item.raw);if(!text){message('That line is blank after cleaning.','bad');return}if(state.phrases.includes(text)){item.why='duplicate';message('Already in archive; preserved as duplicate.','warn');save();return}state.phrases.push(text);state.phrases.sort((a,b)=>a.localeCompare(b));state.review.splice(i,1);state.logs.unshift({at:new Date().toISOString(),source:'REVIEW APPROVAL',scanned:1,added:1,duplicates:0,review:0,blank:0});state.lastAdded=1;save();message('Review line approved and added.','ok')}
-  function approveVisible(){const ids=visibleReview().map(x=>x.id);let added=0;for(const id of ids){const i=state.review.findIndex(x=>x.id===id);if(i<0)continue;const text=clean(state.review[i].text||state.review[i].raw);if(text&&!state.phrases.includes(text)){state.phrases.push(text);state.review.splice(i,1);added++}}
-    state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;state.logs.unshift({at:new Date().toISOString(),source:'BULK REVIEW APPROVAL',scanned:ids.length,added,duplicates:ids.length-added,review:0,blank:0});save();message(`${added} review lines approved; existing duplicates stayed in review.`,added?'ok':'warn')}
+  function hideToast(){clearTimeout(undoTimer);$('toast').hidden=true}
+  function showToast(text,onUndo){
+    $('toastText').textContent=text;$('toast').hidden=false;
+    $('toastUndo').onclick=()=>{hideToast();onUndo()};
+    clearTimeout(undoTimer);undoTimer=setTimeout(hideToast,8000);
+  }
+  function moveToReview(text){
+    const i=state.phrases.indexOf(text);if(i<0) return;
+    const wasKept=state.kept.includes(text);
+    state.phrases.splice(i,1);
+    state.kept=state.kept.filter(p=>p!==text);
+    const item={id:newId(),raw:text,text,why:'removed by hand',source:'ARCHIVE',at:new Date().toISOString()};
+    state.review.push(item);
+    save();
+    showToast('Moved to review.',()=>{
+      const ri=state.review.findIndex(x=>x.id===item.id);
+      if(ri>=0) state.review.splice(ri,1);
+      if(!state.phrases.includes(text)) state.phrases.push(text);
+      if(wasKept&&!state.kept.includes(text)) state.kept.push(text);
+      state.phrases.sort((a,b)=>a.localeCompare(b));
+      save();message('Restored to the archive.','ok');
+    });
+  }
+  function discard(id){
+    const i=state.review.findIndex(x=>x.id===id);if(i<0) return;
+    const item=state.review.splice(i,1)[0];
+    item.discardedAt=new Date().toISOString();
+    state.discarded.unshift(item);
+    save();message('Moved to the discarded list. You can restore it.','warn');
+  }
+  function restoreDiscard(id){
+    const i=state.discarded.findIndex(x=>x.id===id);if(i<0) return;
+    state.review.push(state.discarded.splice(i,1)[0]);
+    save();message('Restored to review.','ok');
+  }
+  function restoreAllDiscarded(){
+    const n=state.discarded.length;
+    if(!n){message('Discarded list is already empty.','warn');return}
+    state.review.push(...state.discarded);state.discarded=[];
+    save();message(n+' discarded line'+(n===1?'':'s')+' restored to review.','ok');
+  }
+  function showJunk(){
+    if(!dictReady){message('Word list is still loading.','warn');return}
+    const junk=junkList();
+    const by={};
+    junk.forEach(p=>{const L=p[0]||'?';by[L]=(by[L]||0)+1});
+    const letters=Object.keys(by).sort().map(L=>L+' '+by[L]).join(' · ')||'None';
+    $('junkSummary').textContent=junk.length+' archive entr'+(junk.length===1?'y fails':'ies fail')+' the 3-word rule or the dictionary.';
+    $('junkLetters').textContent=letters;
+    $('moveJunkBtn').textContent='Move all '+junk.length+' to review';
+    $('moveJunkBtn').disabled=!junk.length;
+    $('junkPanel').hidden=false;
+  }
+  function moveAllJunk(){
+    if(!dictReady){message('Word list is still loading.','warn');return}
+    const junk=junkList();
+    if(!junk.length){message('No junk in the archive.','ok');showJunk();return}
+    download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');
+    const drop=new Set(junk);
+    state.phrases=state.phrases.filter(p=>!drop.has(p));
+    state.kept=state.kept.filter(p=>!drop.has(p));
+    junk.forEach(p=>addReview(p,p,gate(p),'FIND JUNK'));
+    state.logs.unshift({at:new Date().toISOString(),source:'FIND JUNK',scanned:junk.length,added:0,duplicates:0,review:junk.length,blank:0});
+    save();showJunk();message('Moved '+junk.length+' junk line'+(junk.length===1?'':'s')+' to review. Backup downloaded.','ok');
+  }
+  function approve(id){
+    if(!dictReady){message('Word list is still loading.','warn');return}
+    const i=state.review.findIndex(x=>x.id===id);if(i<0) return;
+    const item=state.review[i],text=clean(item.text||item.raw);
+    if(!text){message('That line is blank after cleaning.','bad');return}
+    if(state.phrases.includes(text)){item.why='duplicate';message('Already in archive; preserved as duplicate.','warn');save();return}
+    protect(text);
+    state.phrases.push(text);state.phrases.sort((a,b)=>a.localeCompare(b));state.review.splice(i,1);
+    state.logs.unshift({at:new Date().toISOString(),source:'REVIEW APPROVAL',scanned:1,added:1,duplicates:0,review:0,blank:0});
+    state.lastAdded=1;save();message('Review line approved and added.','ok');
+  }
+  function approveVisible(){
+    if(!dictReady){message('Word list is still loading.','warn');return}
+    if(reviewFilter==='discarded') return;
+    const ids=visibleReview().map(x=>x.id);let added=0;
+    for(const id of ids){
+      const i=state.review.findIndex(x=>x.id===id);if(i<0) continue;
+      const text=clean(state.review[i].text||state.review[i].raw);
+      if(text&&!state.phrases.includes(text)){protect(text);state.phrases.push(text);state.review.splice(i,1);added++}
+    }
+    state.phrases.sort((a,b)=>a.localeCompare(b));state.lastAdded=added;
+    state.logs.unshift({at:new Date().toISOString(),source:'BULK REVIEW APPROVAL',scanned:ids.length,added,duplicates:ids.length-added,review:0,blank:0});
+    save();message(`${added} review lines approved; existing duplicates stayed in review.`,added?'ok':'warn');
+  }
   function download(name,text,type='text/plain'){const blob=new Blob([text],{type:type+';charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);message(`Downloaded ${name}`,'ok')}
   async function copy(text){try{await navigator.clipboard.writeText(text);message('Copied to clipboard.','ok')}catch{message('Copy was blocked; use Export instead.','bad')}}
   function logText(){return ['HORUS A-Z PROCESS LOG','GENERATED '+new Date().toISOString(),'','DATE\tSOURCE\tSCANNED\tADDED\tDUPLICATES\tREVIEW\tBLANK',...state.logs.map(x=>[x.at,x.source,x.scanned,x.added,x.duplicates,x.review,x.blank].join('\t'))].join('\n')}
@@ -280,20 +490,40 @@
       :'Clipboard is empty. Copy your phrases, then tap Paste text again.','warn');
   }
   $('pasteBtn').onclick=pasteFromClipboard;
-  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}processLines(splitLines(v),'PASTE');$('intake').value=''};
+  $('processBtn').onclick=()=>{const v=$('intake').value;if(!v.trim()){message('Paste text or choose TXT files first.','bad');return}if(!dictReady){message('Word list is still loading. Your text is still in the box.','warn');return}processLines(splitLines(v),'PASTE');$('intake').value=''};
   $('clearInputBtn').onclick=()=>{$('intake').value='';message('Intake cleared; saved archive unchanged.')};
   $('sampleBtn').onclick=()=>{$('intake').value='SILVER SUN SPEAKS\nGILDED GARDENS GLOW\nSILVER SUN SPEAKS\nLONE\nRADIANT RIVERS RISE';message('Tiny test loaded. Press PROCESS & SORT A–Z.')};
   $('search').oninput=render;$('clearSearchBtn').onclick=()=>{$('search').value='';activeLetter='ALL';render()};
   $('copyViewBtn').onclick=()=>copy(visible().join('\n'));$('exportViewBtn').onclick=()=>download(activeLetter==='ALL'?'VISIBLE_AZ_RESULTS.txt':activeLetter+'.txt',visible().join('\n'));
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');reviewFilter=b.dataset.review;render()});
   $('approveAllBtn').onclick=approveVisible;$('exportReviewBtn').onclick=()=>download('REVIEW_NOT_DELETED.txt',visibleReview().map(x=>`${x.why}\t${x.text||x.raw}\t${x.source}`).join('\n'));
+  $('exportDiscardBtn').onclick=()=>download('DISCARDED_RESTORABLE.txt',state.discarded.map(x=>`${x.why}\t${x.text||x.raw}\t${x.source}`).join('\n'));
+  $('restoreDiscardBtn').onclick=restoreAllDiscarded;
+  $('findJunkBtn').onclick=showJunk;$('moveJunkBtn').onclick=moveAllJunk;
   $('masterBtn').onclick=()=>download('MASTER_AZ_INDEX.txt',state.phrases.join('\n'));$('azBtn').onclick=()=>download('A_Z_TEXT_BUNDLE.txt',azBundle());$('logBtn').onclick=()=>download('PROCESS_LOG.txt',logText());
   $('backupBtn').onclick=()=>download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');$('sealedBtn').onclick=sealed;
-  $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.phrases)||!Array.isArray(x.review))throw Error();state=Object.assign(fresh(),x);save();message('Backup restored successfully.','ok')}catch{message('That file is not a valid HORUS backup.','bad')}e.target.value=''};
+  $('restoreBtn').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.phrases)||!Array.isArray(x.review))throw Error();state=loadFrom(x);save();message('Backup restored successfully.','ok')}catch{message('That file is not a valid HORUS backup.','bad')}e.target.value=''};
+  function loadFrom(x){const s=Object.assign(fresh(),x);if(!Array.isArray(s.discarded)) s.discarded=[];if(!Array.isArray(s.allow)) s.allow=[];if(!Array.isArray(s.kept)) s.kept=[];if(!Array.isArray(s.logs)) s.logs=[];s.version=2;return s}
   const dz=$('dropZone');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>readFiles(e.dataTransfer.files));$('files').onchange=e=>readFiles(e.target.files);
   async function readFiles(files){const all=[];for(const f of files){try{all.push(...splitLines(await f.text()))}catch{message(`Could not read ${f.name}.`,'bad')}}if(all.length)processLines(all,[...files].map(x=>x.name).join(', '));$('files').value=''}
   const d=$('confirmDialog');$('resetBtn').onclick=()=>d.showModal();$('cancelReset').onclick=()=>d.close();$('confirmReset').onclick=()=>{state=fresh();localStorage.removeItem(KEY);d.close();render();message('Local browser archive reset. GitHub and HP files were not changed.','warn')};
-  window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});render();
+  window.addEventListener('storage',e=>{if(e.key===KEY){state=load();render()}});
+  async function loadDict(){
+    try{
+      const res=await fetch('words-scowl.txt',{cache:'force-cache'});
+      if(!res.ok) throw new Error(String(res.status));
+      const text=await res.text();
+      text.split(/\n/).forEach(line=>{const w=line.trim().toLowerCase();if(w&&w[0]!=='#') DICT.add(w)});
+      dictReady=DICT.size>1000;
+      if(!dictReady) throw new Error('short list');
+      message('Word list ready ('+DICT.size.toLocaleString()+' words). Paste a line, then process.','ok');
+    }catch(err){
+      dictReady=false;
+      message('Word list failed to load. Nothing can enter the archive until it does.','bad');
+    }
+    render();
+  }
+  render();loadDict();
 })();
 </script>
 </body>
