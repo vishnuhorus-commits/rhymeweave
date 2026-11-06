@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#071b1c">
-  <title>HORUS A–Z Command Center</title>
+  <title>HORUS Solar Funnel · A–Z Command Center</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23041112'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%23d9aa52' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='%23ffe08a'/%3E%3C/svg%3E">
   <style>
     :root{--ink:#041112;--deep:#071b1c;--panel:#0b292a;--panel2:#103536;--teal:#1a7773;--teal2:#39b5aa;--gold:#d9aa52;--gold2:#ffe08a;--cream:#f5ecd8;--muted:#9fb9b5;--danger:#e9826f;--ok:#65d6a6;--line:rgba(217,170,82,.25);--shadow:0 18px 60px rgba(0,0,0,.38);--radius:18px}
@@ -103,14 +103,16 @@
     @media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.alphabet{grid-template-columns:repeat(9,1fr)}}
     @media(max-width:520px){.shell{padding:8px}.mast{padding:20px 16px}.stats{gap:7px}.stat{padding:12px}.alphabet{grid-template-columns:repeat(7,1fr)}.exports{grid-template-columns:1fr}.btn{flex:1 1 auto}}
   </style>
+  <link rel="stylesheet" href="horus-solar-funnel.css?v=solar-1">
 </head>
 <body>
 <main class="shell">
   <header class="mast">
-    <div class="eyebrow">Alliteration Archive · Living Local Edition</div>
-    <h1>HORUS <span>A–Z</span> COMMAND CENTER</h1>
-    <p class="sub">One safe surface to gather, guard, clean, sort, search and export alliterative phrases. Your archive remains on this device unless you export it.</p>
+    <div class="eyebrow">The Solar Scriptorium · Living Local Archive</div>
+    <h1>HORUS <span>SOLAR</span> FUNNEL</h1>
+    <p class="sub">Your words, given their place. Gather writing once. Separate it into letters and sound families. File new copies into your real folders.</p>
     <div class="motto">ONLY WHAT IS NEW · NOTHING DELETED</div>
+    <div class="actions"><a class="btn primary" href="#solarFunnel">ENTER THE FUNNEL</a><a class="btn" href="#intake">OPEN COMMAND DESK</a></div>
   </header>
 
   <section class="stats" aria-label="Archive statistics">
@@ -126,6 +128,33 @@
   <div class="tabs" id="sectionTabs" aria-label="Command center sections"><button class="tab on" type="button" data-section="desk">Command desk</button><button class="tab" type="button" data-section="consonant">Consonant Search</button></div>
 
   <div class="grid" id="desk">
+    <section class="solar-funnel" id="solarFunnel" aria-label="Solar real-folder writing funnel">
+      <div class="solar-heading"><div><div class="solar-kicker">ONE INTAKE · LETTERS · SOUND FAMILIES · REAL FILES</div><h2>The words find their chambers.</h2><p>Paste writing, add a folder, or drop a ZIP from your chunker. One action creates new A–Z and phonetic-family files—not just a list on the screen.</p></div><div class="solar-seal" aria-hidden="true">A·Z</div></div>
+      <div class="solar-layout">
+        <div class="solar-intake">
+          <div class="solar-step"><b>I</b> Gather your writing</div>
+          <textarea id="funnelPaste" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Paste finished writing here. Each line stays a complete entry. Nothing is changed in the original."></textarea>
+          <div class="funnel-drop" id="funnelDrop"><strong>Drop files, folders, or a chunker ZIP</strong><small>TXT · Markdown · CSV · JSON · HTML · DOCX · ZIP</small></div>
+          <div class="actions"><button class="btn" id="funnelAddFiles" type="button">ADD FILES / ZIP</button><button class="btn" id="funnelAddFolder" type="button">ADD FOLDER</button><button class="btn" id="funnelClearQueue" type="button">Clear queued selection</button></div>
+          <input id="funnelFiles" type="file" multiple hidden accept=".txt,.text,.md,.markdown,.csv,.tsv,.json,.html,.htm,.docx,.zip,.log,.xml,.rtf">
+          <input id="funnelFolderFiles" type="file" webkitdirectory multiple hidden>
+          <p class="funnel-queue" id="funnelQueue"></p><ul class="funnel-queue-list" id="funnelQueueList"></ul>
+          <label class="solar-source">What to separate<select id="funnelSource"><option value="intake">This pasted / queued writing</option><option value="archive">Finished browser archive</option></select></label>
+        </div>
+        <div class="solar-destination">
+          <div class="solar-step"><b>II</b> Give it a real destination</div>
+          <div class="funnel-connection" id="funnelConnection">LOCAL FOLDER NOT YET CONNECTED</div>
+          <p class="solar-path">Your A–Z foundation:<br>D:\HORUS_AZ_FILE_FOUNDATION</p>
+          <p class="solar-help">Choose that folder once in <strong>Edge or Chrome</strong>. Existing A–Z letter folders are reused when found. Every saved file gets a unique batch name. H: and other folders are not changed.</p>
+          <button class="btn" id="funnelChooseFolder" type="button">CHOOSE YOUR A–Z FOLDER</button>
+          <div class="solar-actions"><button class="btn primary" id="funnelFile" type="button" disabled>SEPARATE &amp; FILE</button><button class="btn" id="funnelZip" type="button">DOWNLOAD FOLDER ZIP</button></div>
+          <p class="solar-safety"><b>Originals remain untouched.</b> A–Z keeps each line intact. Sound-family views reuse your Command Center’s consonant-skeleton rules; they are explainable suggestions, not guaranteed pronunciation. Review and source references are saved.</p>
+        </div>
+      </div>
+      <div class="solar-result"><div class="notice" id="funnelStatus" role="status" aria-live="polite">Ready. Add writing, then choose real-folder filing or the folder ZIP.</div><span class="funnel-busy" id="funnelBusy" hidden aria-label="Working"></span><div class="solar-run"><div><b id="funnelLastRun">No run yet. Your archive is safe.</b><p id="funnelRunPath"></p></div><button class="btn safe" id="funnelBrowse" type="button" disabled>BROWSE SAVED FOLDERS</button></div>
+        <section class="funnel-browser" id="funnelBrowser" hidden><div class="funnel-browser-header"><h3>Your actual saved folders</h3><button class="btn" id="funnelCloseBrowser" type="button">Close</button></div><div class="funnel-browser-groups" id="funnelBrowserGroups"></div><p class="solar-path" id="funnelBrowserPath"></p><div class="funnel-browser-files" id="funnelBrowserFiles"></div><pre class="funnel-preview" id="funnelFilePreview"></pre></section>
+      </div>
+    </section>
     <section class="card">
       <h2>𓂀 Intake Gateway <span class="tag">Local only</span></h2>
       <textarea id="intake" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Paste one phrase per line…&#10;&#10;SILVER SUN SPEAKS&#10;GILDED GARDENS GLOW"></textarea>
@@ -1293,7 +1322,11 @@
   render();
   if(loadFallback) message('The stored archive could not be read, so it was not overwritten. Import a backup to replace it.','bad');
   loadDict();
+  window.HorusFolderBridge=Object.freeze({getSnapshot:()=>JSON.parse(JSON.stringify(state)),head,skel,pretty,splitLines,htmlToPlain,stopWords:Object.freeze([...STOP])});
 })();
 </script>
+<script src="vendor/jszip.min.js"></script>
+<script src="horus-funnel-core.js?v=solar-1"></script>
+<script src="horus-funnel-ui.js?v=solar-1"></script>
 </body>
 </html>
