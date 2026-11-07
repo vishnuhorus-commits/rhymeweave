@@ -155,6 +155,38 @@
     var batchId = validateSegment(options.batchId);
     var letterBase = options.letterBase === undefined ? 'A-Z' : options.letterBase;
     if (letterBase !== '') letterBase = validateRelativePath(letterBase);
+    var letterDirs, letterPaths = new Map(), letterDirectoryOwners = new Map();
+    if (options.letterDirs !== undefined) {
+      var suppliedLetterDirs = options.letterDirs;
+      if (!suppliedLetterDirs || typeof suppliedLetterDirs !== 'object' ||
+          Object.prototype.toString.call(suppliedLetterDirs) !== '[object Object]') {
+        throw new TypeError('letterDirs must be an object mapping uppercase A-Z or _ to safe relative directories.');
+      }
+      for (var inheritedKey in suppliedLetterDirs) {
+        if (!Object.prototype.hasOwnProperty.call(suppliedLetterDirs, inheritedKey)) {
+          throw new TypeError('letterDirs must contain only own mapping keys.');
+        }
+      }
+      letterDirs = {};
+      Reflect.ownKeys(suppliedLetterDirs).forEach(function (letter) {
+        if (typeof letter !== 'string' || letter.length !== 1 || !/^[A-Z_]$/.test(letter)) {
+          throw new TypeError('Invalid letterDirs key: only uppercase A-Z and _ are allowed.');
+        }
+        letterDirs[letter] = validateRelativePath(suppliedLetterDirs[letter]);
+      });
+    }
+    // Mapped paths are relative to the export root, not to letterBase. Validate
+    // every letter, including unused fallbacks, without mutating the input map.
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'.split('').forEach(function (letter) {
+      var path = letterDirs && Object.prototype.hasOwnProperty.call(letterDirs, letter) ?
+        letterDirs[letter] : (letterBase ? letterBase + '/' : '') + letter;
+      var key = pathKey(path);
+      if (letterDirectoryOwners.has(key)) {
+        throw new Error('A-Z directory collision between letters ' + letterDirectoryOwners.get(key) + ' and ' + letter + ': ' + path);
+      }
+      letterDirectoryOwners.set(key, letter);
+      letterPaths.set(letter, path);
+    });
     var chunkLines = positiveInteger(options.chunkLines === undefined ? 5000 : options.chunkLines, 'chunkLines');
     var maxRecords = positiveInteger(options.maxRecords === undefined ? 200000 : options.maxRecords, 'maxRecords', true);
     var maxOutputFiles = positiveInteger(options.maxOutputFiles === undefined ? 20000 : options.maxOutputFiles, 'maxOutputFiles');
@@ -403,7 +435,7 @@
       return group;
     }
     Array.from(az.keys()).sort(compareStrings).forEach(function (letter) {
-      addTextGroup((letterBase ? letterBase + '/' : '') + letter, 'A-Z / ' + letter, 'az', az.get(letter), function (part) {
+      addTextGroup(letterPaths.get(letter), 'A-Z / ' + letter, 'az', az.get(letter), function (part) {
         return batchId + '_' + letter + '_' + part + '.txt';
       }, { letter: letter });
     });
@@ -484,6 +516,7 @@
       maxFamilyLinks: maxFamilyLinks, maxOutputBytes: maxOutputBytes,
       maxFamilyLineChars: maxFamilyLineChars, maxFamilyWordsPerRecord: maxFamilyWordsPerRecord
     };
+    if (letterDirs !== undefined) summary.letterDirs = letterDirs;
     var manifest = {
       formatVersion: 1, batchId: batchId, runPath: runPath, indexPath: indexPath, summary: summary,
       classification: {

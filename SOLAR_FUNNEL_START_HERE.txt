@@ -1,25 +1,40 @@
 HORUS SOLAR FUNNEL — START HERE
 
-Open this page in Microsoft Edge or Google Chrome on your Windows computer:
-https://vishnuhorus-commits.github.io/rhymeweave/horus-command-center.html
+OPEN IN MICROSOFT EDGE OR GOOGLE CHROME ON YOUR WINDOWS COMPUTER:
+https://vishnuhorus-commits.github.io/rhymeweave/horus-command-center.html?v=solar-3#solarFunnel
 
-1. Paste writing into the Solar Funnel, or choose ADD FILES / ZIP or ADD FOLDER.
-2. Choose CHOOSE YOUR A–Z FOLDER. Select D:\HORUS_AZ_FILE_FOUNDATION in the Windows folder picker. The browser cannot connect to D: just because a path is printed on a page.
-3. Choose SEPARATE & FILE. This creates NEW copies in real A–Z and PHONETIC_FAMILIES folders. Existing files are never replaced, merged, renamed, moved, or deleted. Your H: backup is not changed.
-4. Choose BROWSE SAVED FOLDERS to read the actual saved files. For clickable local file/directory links, open the per-run INDEX.html from inside the saved HORUS_FUNNEL_RUNS batch folder.
+THREE STEPS
 
-If you do not want to connect a folder, choose DOWNLOAD FOLDER ZIP instead. The ZIP contains the same kind of A–Z/family text files, originals, source references, review reports, and a linked index. Extract the entire ZIP together so its relative links work.
+1. Paste writing, ADD FILES / ZIP, or ADD FOLDER.
+2. CHOOSE YOUR A–Z FOLDER. In the Windows picker, select D:\HORUS_AZ_FILE_FOUNDATION, or its actual container of letter folders.
+3. SEPARATE & FILE. New copies go into A–Z and PHONETIC_FAMILIES. Touch a glyph chamber to read the actual local letter folder.
 
-HOW YOUR WRITING IS KEPT SAFE
+Start with one small file. PREVIEW — NO SAVING shows its routes, duplicate count, and input notes without writing or downloading anything. Filing rechecks the current input and destination, rather than applying an old preview.
 
-The browser archive and its existing Command Desk controls are unchanged. Solar Funnel does not require finished writing to pass the old three-word alliteration gate. Each nonblank line remains intact in the A–Z export, with its original case and punctuation. Letter sorting uses the first alphabetic letter, including common Latin-letter transliteration; other scripts remain under an underscore bucket when no Latin letter is available.
+Your folder choice is remembered in this browser when supported. Reopening the page does not write files or grant new permission. If permission needs renewal, click RECONNECT SAVED FOLDER. CHANGE A-Z FOLDER chooses another destination. BROWSE SAVED FOLDERS opens A–Z, sound-family folders, and past run indexes even after reopening the page. Only the folder handle is remembered—not writing or passwords.
 
-Family views use the existing Command Center's starting-sound/consonant-skeleton approximation. A line may appear under more than one relevant family. These are suggestions, not a pronunciation dictionary or a promise that every word sounds alike. Unknown/unclassified text stays in A–Z and is noted in Review. Duplicate occurrences within a batch are recorded in Review and provenance; original source files remain intact. Repeating a whole export creates another uniquely named batch rather than changing a previous batch.
+The browser cannot connect to D: simply because its path is printed on a page. Folder permission is granted by your Windows browser, not by the Manus side panel. Your Windows files have not been migrated during development; testing used only sample fixtures.
 
-Recognized chunker ZIPs with A_Z/A.txt or A-Z/A/... files use those primary writing buckets. Their root logs, README files, and secondary indexes are not re-imported as writing. Bucket headings are noted rather than treated as writing. The complete original ZIP is retained.
+YOUR EXISTING LAYOUT
 
-Plain text, Markdown, CSV/JSON text, HTML text extraction, and DOCX paragraphs are supported. HTML/script input is not executed. PDF/scanned pages, RTF, and other unsupported formats are reported, not guessed; original inputs remain untouched. Password-protected/malformed ZIPs stop with an error. Nested ZIPs are not recursively expanded.
+Plain A/B/C folders, numbered 01_A through 26_Z folders, and nested A-Z/A, A_Z/A, or AZ/A layouts are recognized. When several layouts exist, the one with the most existing letter directories is chosen. Preview lets you check the routes. Original folders/files are not renamed or replaced; new files have unique batch names. H: is not automatically changed.
 
-For manageable batches, each input file is limited to 32 MiB; queued inputs total up to 96 MiB; expanded data up to 128 MiB; 200,000 line records; and generated outputs up to 220 MiB. Text outputs split into chunks of up to 5,000 writing lines. If a batch exceeds these limits, use smaller chunker files/ZIPs. No output is silently truncated.
+If you prefer no folder permission, DOWNLOAD FOLDER ZIP. Extract the entire ZIP together; its per-run INDEX.html has real relative file/directory links. ZIPs include original inputs and source references, so keep them private unless you intentionally share them. The portable ZIP uses standard A-Z folders.
 
-This is a button-operated local funnel, not an unattended folder watcher. It does not automatically upload writing or update the H: backup. Your browser controls folder permissions, and you may need to reconnect the destination after reopening the page or clearing browser permissions.
+FROM YOUR OTHER TOOLS
+
+Temple Sorter v002: add its A–Z ZIP. The funnel selects original-wording letter buckets, not clean-uppercase duplicates, run logs, README files, or secondary indexes. The complete original ZIP remains preserved. Temple checkpoints are backups: restore in Temple first, then export its ZIP.
+
+Constant Consonants SAFE PILOT: use Export approved text there, then add that TXT to the funnel. Dictionary backup JSON is not writing input. The pilot's browser storage, original wording, review/approval decisions, and backups are not changed or automatically promoted.
+
+SAFETY AND FAMILY RULES
+
+The existing Command Desk and browser archive remain unchanged. Nonblank writing lines keep their original case and punctuation. Duplicate occurrences are recorded in review/provenance; original inputs remain intact. A balance check must pass before filing.
+
+Sound-family folders reuse the Command Center's starting-sound/consonant-skeleton approximation. A line can belong to several families. These are suggestions, not a pronunciation dictionary. Unknown/non-Latin writing stays in the underscore A–Z bucket and Review rather than being discarded. A–Z uses the first alphabetic letter of the writing, not its filename.
+
+TXT/Markdown, CSV/JSON text, inert HTML visible-text extraction, DOCX paragraphs, and ZIP intake are supported. HTML is not run or allowed to load embedded resources during extraction. For an old HTML tool, export its actual writing first; static page labels are not its browser-stored archive. PDF/scans, RTF, and unsupported formats are reported, not guessed. Nested ZIPs are not recursively expanded.
+
+Use manageable batches: 32 MiB per input file, 96 MiB queued input, 128 MiB expanded data, 200,000 line records, and 220 MiB generated output. Text outputs split into chunks of up to 5,000 lines. Oversized batches stop rather than silently truncate. Folder browsing shows up to 300 folder/file entries and limited text previews; saved files remain complete.
+
+This is a button-operated local funnel, not an unattended watcher or cloud uploader. Supabase was not connected, so no database tables or writing were changed/uploaded. No cloud backup is claimed. Writing is filed only after you connect the destination and choose SEPARATE & FILE.

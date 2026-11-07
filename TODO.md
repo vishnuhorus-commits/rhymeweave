@@ -1,9 +1,14 @@
 # Requested outcomes
 
-- [ ] The existing Horus Command Center gains a Separate & File action, rather than a separate replacement system.
-- [ ] Pasted writing, chosen files, folders, and chunker ZIPs can be separated into A–Z text outputs and explainable phonetic-family outputs.
-- [ ] The user can choose `D:\HORUS_AZ_FILE_FOUNDATION` and file additive outputs into real folders, with links to actual generated files/directories.
-- [ ] A folder-structured ZIP is available when direct folder access is unavailable or not chosen.
-- [ ] Original writing, existing files, browser archive keys, existing validation/review functions, and the H: backup stay intact. Duplicate/unclassified/unsupported items are reported and source provenance is retained.
-- [ ] Input and ZIP expansion are bounded; output names do not collide; unsafe paths and executable input content are not used.
-- [ ] The affected code passes syntax, pure-engine, and fixture-based browser checks; the same public Command Center URL serves the confirmed update.
+- [x] Extend the existing Command Center, keeping its URL and archive storage intact.
+- [x] Accept pasted writing, files/folders, and manageable chunker/Temple ZIPs.
+- [x] Create real A–Z and phonetic-family copies without overwriting original files.
+- [x] Reuse the most-complete plain, nested, or numbered existing letter layout.
+- [x] Provide folder ZIP export and actual local folder/glyph navigation.
+- [x] Preserve original inputs, provenance, duplicates, and unclassified/unsupported reports.
+- [x] Keep HTML inert and backup/checkpoint metadata out of writing buckets.
+- [x] Preview routes without saving; remember only an explicit folder handle, with no file writes on reload and explicit permission renewal.
+- [x] Browse past A–Z, family and run-index folders after reopening.
+- [x] Pass pure-engine/state-helper and fixture/native-browser safety and integrity tests.
+- [ ] Verify the final published page and companion assets are live.
+- [ ] Database inspection/integration remains unperformed: access was not enabled, and no alternate access route or database writes were used.

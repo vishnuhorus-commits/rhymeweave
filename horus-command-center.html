@@ -103,7 +103,7 @@
     @media(max-width:900px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.alphabet{grid-template-columns:repeat(9,1fr)}}
     @media(max-width:520px){.shell{padding:8px}.mast{padding:20px 16px}.stats{gap:7px}.stat{padding:12px}.alphabet{grid-template-columns:repeat(7,1fr)}.exports{grid-template-columns:1fr}.btn{flex:1 1 auto}}
   </style>
-  <link rel="stylesheet" href="horus-solar-funnel.css?v=solar-1">
+  <link rel="stylesheet" href="horus-solar-funnel.css?v=solar-3">
 </head>
 <body>
 <main class="shell">
@@ -147,11 +147,15 @@
           <p class="solar-path">Your A–Z foundation:<br>D:\HORUS_AZ_FILE_FOUNDATION</p>
           <p class="solar-help">Choose that folder once in <strong>Edge or Chrome</strong>. Existing A–Z letter folders are reused when found. Every saved file gets a unique batch name. H: and other folders are not changed.</p>
           <button class="btn" id="funnelChooseFolder" type="button">CHOOSE YOUR A–Z FOLDER</button>
+          <div class="solar-actions"><button class="btn safe" id="funnelPreview" type="button">PREVIEW — NO SAVING</button></div>
           <div class="solar-actions"><button class="btn primary" id="funnelFile" type="button" disabled>SEPARATE &amp; FILE</button><button class="btn" id="funnelZip" type="button">DOWNLOAD FOLDER ZIP</button></div>
           <p class="solar-safety"><b>Originals remain untouched.</b> A–Z keeps each line intact. Sound-family views reuse your Command Center’s consonant-skeleton rules; they are explainable suggestions, not guaranteed pronunciation. Review and source references are saved.</p>
         </div>
       </div>
       <div class="solar-result"><div class="notice" id="funnelStatus" role="status" aria-live="polite">Ready. Add writing, then choose real-folder filing or the folder ZIP.</div><span class="funnel-busy" id="funnelBusy" hidden aria-label="Working"></span><div class="solar-run"><div><b id="funnelLastRun">No run yet. Your archive is safe.</b><p id="funnelRunPath"></p></div><button class="btn safe" id="funnelBrowse" type="button" disabled>BROWSE SAVED FOLDERS</button></div>
+        <p class="solar-balance" id="funnelBalance">Writing balance is checked before any filing.</p>
+        <section class="funnel-browser" id="funnelRoutingPreview" hidden><div class="funnel-browser-header"><h3>Where your writing will go</h3><button class="btn" id="funnelClosePreview" type="button">Close preview</button></div><pre class="funnel-preview" id="funnelPreviewText"></pre></section>
+        <section class="solar-chamber-strip" aria-label="Actual A-Z letter folders"><div class="solar-kicker" id="funnelChamberHint">CONNECT YOUR FOUNDATION TO OPEN ITS LETTER CHAMBERS</div><div class="solar-chamber-grid" id="funnelChambers"></div></section>
         <section class="funnel-browser" id="funnelBrowser" hidden><div class="funnel-browser-header"><h3>Your actual saved folders</h3><button class="btn" id="funnelCloseBrowser" type="button">Close</button></div><div class="funnel-browser-groups" id="funnelBrowserGroups"></div><p class="solar-path" id="funnelBrowserPath"></p><div class="funnel-browser-files" id="funnelBrowserFiles"></div><pre class="funnel-preview" id="funnelFilePreview"></pre></section>
       </div>
     </section>
@@ -1326,7 +1330,8 @@
 })();
 </script>
 <script src="vendor/jszip.min.js"></script>
-<script src="horus-funnel-core.js?v=solar-1"></script>
-<script src="horus-funnel-ui.js?v=solar-1"></script>
+<script src="horus-funnel-core.js?v=solar-3"></script>
+<script src="horus-funnel-state.js?v=solar-3"></script>
+<script src="horus-funnel-ui.js?v=solar-3"></script>
 </body>
 </html>

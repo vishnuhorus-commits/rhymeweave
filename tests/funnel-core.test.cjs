@@ -72,6 +72,9 @@ test('exports the same pure API for CommonJS and the browser global', () => {
   const result = context.HorusFunnelCore.planExport({ records: [record('Saint sent.')], batchId: 'browser-fixture', head, skel, pretty });
   assert.equal(result.summary.uniqueRecords, 1);
   assert.ok(result.entries.some(entry => entry.path === 'A-Z/S/browser-fixture_S_001.txt'));
+  const mapped = context.HorusFunnelCore.planExport({ records: [record('Saint sent.')], batchId: 'browser-fixture', head, skel, pretty, letterDirs: { S: '19_S' } });
+  assert.ok(mapped.entries.some(entry => entry.path === '19_S/browser-fixture_S_001.txt'));
+  assertLinksResolve(mapped);
 });
 
 test('A-Z preserves complete lines, case, punctuation, and surrounding whitespace while sorting', () => {
@@ -98,6 +101,137 @@ test('empty letterBase files directly into existing A/B/etc foundation folders',
   assert.ok(result.entries.some(entry => entry.path === 'B/fixture-20261106-001_B_001.txt'));
   assert.ok(result.entries.every(entry => !entry.path.startsWith('A-Z/')));
   assert.ok(assertLinksResolve(result).hrefs.some(href => href.startsWith('../../A/')));
+});
+
+test('numbered letterDirs reuse actual A-Z folders with chunked records, duplicates, and provenance', () => {
+  const letterDirs = Object.fromEntries([...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].map((letter, i) => [letter, `${String(i + 1).padStart(2, '0')}_${letter}`]));
+  letterDirs._ = '27_Unsorted';
+  const inputs = [
+    record('  Apple, intact!  ', 'A-Z/source A Apple.txt', 3), record('Avocado'),
+    record('Banana'), record('Zebra'), record('123 ???'),
+    record('APPLE, INTACT!', 'B/source Z Apple.txt', 19)
+  ];
+  const originals = [{ name: 'A-Z Apple Banana Zebra.txt', data: 'A, B and Z stay unchanged.' }];
+  const result = plan(inputs, { letterBase: '', letterDirs, chunkLines: 1, originals });
+  const baseline = plan(inputs, { letterBase: '', chunkLines: 1, originals });
+  const az = result.groups.filter(group => group.type === 'az');
+  assert.deepEqual(az.map(group => [group.letter, group.path]), [['A', '01_A'], ['B', '02_B'], ['Z', '26_Z'], ['_', '27_Unsorted']]);
+  assert.equal(az[0].files.length, 2);
+  for (const group of az) {
+    assert.ok(group.files.every(file => file.startsWith(group.path + '/')));
+    assert.ok(group.files.every(file => result.entries.some(entry => entry.kind === 'az' && entry.path === file)));
+  }
+  assert.ok(ofKind(result, 'az').every(entry => !/^(?:A-Z|[A-Z_])\//.test(entry.path)));
+  assert.deepEqual(azTexts(result), azTexts(baseline));
+  assert.deepEqual(ofKind(result, 'family'), ofKind(baseline, 'family'));
+  assert.deepEqual(ofKind(result, 'original'), ofKind(baseline, 'original'));
+  assert.deepEqual(result.manifest.records.map(item => item.source), inputs.map(item => item.source));
+  for (const item of result.manifest.records) {
+    assert.ok(item.azPath.startsWith(letterDirs[item.letter] + '/'));
+    assert.ok(result.entries.some(entry => entry.path === item.azPath));
+  }
+  assert.equal(result.manifest.records[5].azPath, result.manifest.records[0].azPath);
+  assert.match(reviewText(result), /A-Z copy="01_A\//);
+  const savedManifest = JSON.parse(ofKind(result, 'manifest')[0].data);
+  assert.deepEqual(savedManifest.summary.letterDirs, letterDirs);
+  assert.deepEqual(savedManifest.groups, result.groups);
+  assert.deepEqual(savedManifest.outputs.map(item => item.path), result.entries.map(entry => entry.path));
+  const provenance = ofKind(result, 'provenance').flatMap(lines).map(JSON.parse).filter(item => item.inputType === 'record');
+  assert.deepEqual(provenance.map(item => item.azPath), result.manifest.records.map(item => item.azPath));
+  assert.equal(result.summary.maxOutputBytes, 220 * 1024 * 1024);
+  assert.ok(outputBytes(result) <= result.summary.maxOutputBytes);
+  const { hrefs } = assertLinksResolve(result);
+  for (const directory of ['01_A', '02_B', '26_Z', '27_Unsorted']) {
+    assert.ok(hrefs.some(href => href.startsWith(`../../${directory}/`)));
+  }
+});
+
+test('partial letterDirs override from the export root and missing letters retain letterBase fallback', () => {
+  for (const letterBase of [undefined, '', 'Existing\\Plain']) {
+    const result = plan([record('Apple'), record('Banana'), record('123!')], {
+      letterBase, letterDirs: { A: 'Nested\\01_A' }
+    });
+    const base = letterBase === undefined ? 'A-Z' : letterBase.replace(/\\/g, '/');
+    const prefix = base ? base + '/' : '';
+    assert.deepEqual(result.groups.filter(group => group.type === 'az').map(group => group.path), ['Nested/01_A', prefix + 'B', prefix + '_']);
+    assert.equal(result.summary.letterBase, base);
+    assert.deepEqual(result.manifest.summary.letterDirs, { A: 'Nested/01_A' });
+    assertLinksResolve(result);
+  }
+  const defaultResult = plan([record('Apple'), record('Banana')]);
+  assert.deepEqual(plan([record('Apple'), record('Banana')], { letterDirs: undefined }), defaultResult);
+  assert.ok(!Object.hasOwn(defaultResult.summary, 'letterDirs'));
+});
+
+test('letterDirs reject malformed maps, invalid keys, unsafe paths, and Windows invalid names even if unused', () => {
+  for (const letterDirs of [null, [], '01_A', 1, true, () => {}, new Map(), new Set(), new Date()]) {
+    assert.throws(() => plan([], { letterDirs }), /letterDirs.*object/i);
+  }
+  for (const key of ['a', 'AA', 'A/B', 'A\n', '_\r', '1', '', '__proto__', 'constructor', 'prototype']) {
+    assert.throws(() => plan([], { letterDirs: { [key]: '01_A' } }), /letterDirs key/i);
+  }
+  assert.throws(() => plan([], { letterDirs: { [Symbol('A')]: '01_A' } }), /letterDirs key/i);
+  assert.throws(() => plan([], { letterDirs: Object.defineProperty({}, 'a', { value: '01_A' }) }), /letterDirs key/i);
+  assert.throws(() => plan([], { letterDirs: Object.create({ A: '01_A' }) }), /own mapping keys/i);
+  for (const unsafe of [
+    '', ' ', null, undefined, 1, {}, '/absolute', '\\absolute', 'D:\\01_A', 'C:01_A', '\\\\server\\share',
+    '../escape', 'safe/../escape', 'safe\\..\\escape', './01_A', 'safe//01_A', 'safe/', 'safe\\\\01_A',
+    'bad\0name', 'bad\u202ename', '<bad>', 'bad?', 'bad*', 'bad|name', 'bad:name', 'bad"name',
+    'trailing.', 'trailing ', 'CON', 'con.txt', 'NUL', 'AUX', 'PRN', 'COM1', 'LPT9',
+    'COM¹.txt', 'LPT².log', 'CON .txt', 'CLOCK$', 'CONIN$', 'CONOUT$', 'x'.repeat(256)
+  ]) {
+    assert.throws(() => plan([], { letterDirs: { Z: unsafe } }), /unsafe|reserved|255/i, `must reject mapping ${JSON.stringify(unsafe)}`);
+  }
+});
+
+test('letterDirs reject Windows-equivalent and fallback directory collisions before unused groups can hide them', () => {
+  for (const letterDirs of [
+    { A: 'same', B: 'same' }, { A: 'Letters/01_A', Z: 'letters/01_a' },
+    { A: 'nested\\same', B: 'nested/same' }, { A: 'café', B: 'cafe\u0301' },
+    { A: 'A-Z/B' }, { _: 'A-Z/Z' }
+  ]) {
+    assert.throws(() => plan([], { letterDirs }), /directory collision/i);
+  }
+  assert.throws(() => plan([], { letterBase: '', letterDirs: { A: 'b' } }), /directory collision/i);
+  assert.throws(() => plan([], { letterBase: 'Existing', letterDirs: { A: 'existing/Z' } }), /directory collision/i);
+  assert.throws(() => plan([record('Apple'), record('Banana')], {
+    letterDirs: { A: 'Letters/01_A', B: 'letters/02_B' }
+  }), /Output path collision/i);
+  assert.throws(() => plan([record('Apple')], {
+    letterDirs: { A: 'HORUS_FUNNEL_RUNS/fixture-20261106-001/fixture-20261106-001_INDEX.html' }
+  }), /Output path collision/i);
+});
+
+test('letterDirs input remains immutable and normalized returned routing metadata is not aliased', () => {
+  const letterDirs = Object.freeze(Object.assign(Object.create(null), { A: 'Nested\\01_A', B: '02_B', _: 'Review letters/_' }));
+  const inputs = Object.freeze([Object.freeze(record('Apple')), Object.freeze(record('Banana'))]);
+  const options = Object.freeze({ records: inputs, batchId: 'immutable-map', head, skel, pretty, letterBase: '', letterDirs });
+  const before = JSON.stringify(options);
+  const result = core.planExport(options);
+  assert.equal(JSON.stringify(options), before);
+  assert.notStrictEqual(result.summary.letterDirs, letterDirs);
+  assert.deepEqual(result.summary.letterDirs, { A: 'Nested/01_A', B: '02_B', _: 'Review letters/_' });
+  result.summary.letterDirs.A = 'returned-plan-only';
+  assert.equal(letterDirs.A, 'Nested\\01_A');
+  assert.equal(JSON.stringify(options), before);
+});
+
+test('mapped plain and nested index links resolve URI-escaped actual paths with exact byte-budget enforcement', () => {
+  const options = {
+    batchId: "mapped & ' # % é", letterBase: 'Fallback',
+    letterDirs: { A: "Existing & ' # % é\\01_A", B: '02_B', _: 'Nested/Unknown' }
+  };
+  const inputs = [record('Apple'), record('Banana'), record('Zebra'), record('123!')];
+  const result = plan(inputs, options);
+  const { hrefs } = assertLinksResolve(result);
+  assert.ok(hrefs.some(href => href.startsWith('../../Existing%20%26%20%27%20%23%20%25%20%C3%A9/01_A/')));
+  assert.ok(hrefs.some(href => href.startsWith('../../02_B/')));
+  assert.ok(hrefs.some(href => href.startsWith('../../Nested/Unknown/')));
+  assert.ok(hrefs.some(href => href.startsWith('../../Fallback/Z/')));
+  let budget = outputBytes(plan(inputs, { ...options, maxOutputBytes: 1000000 }));
+  for (let i = 0; i < 3; i++) budget = outputBytes(plan(inputs, { ...options, maxOutputBytes: budget }));
+  assert.equal(outputBytes(plan(inputs, { ...options, maxOutputBytes: budget })), budget);
+  assert.throws(() => plan(inputs, { ...options, maxOutputBytes: budget - 1 }), /Output byte limit exceeded/);
 });
 
 test('each unique non-stopword contributes its own family; complete phrases appear in multiple views only once per view', () => {
