@@ -214,6 +214,11 @@
       </div>
       <input id="importFile" type="file" accept=".json,.txt,application/json,text/plain" hidden>
       <div style="height:14px"></div>
+      <h2>Living Memory <span class="tag">One archive for every device</span></h2>
+      <p style="margin:6px 0 10px;opacity:.85">Saves your approved lines into the same index as the Drop Box and the Living Memory website, so they are safe off this browser and the same on iPad, phone and laptop. Repeats are skipped. Lines its filter does not pass go to Review there. Nothing is deleted.</p>
+      <div class="actions"><button class="btn" id="lmCheckBtn" type="button">Check (adds nothing)</button><button class="btn primary" id="lmSaveBtn" type="button">Save to Living Memory</button></div>
+      <div class="notice" id="lmStatus" role="status" style="margin-top:10px"></div>
+      <div style="height:14px"></div>
       <h2>Guardrails</h2>
       <ul class="rulelist">
         <li><strong>Uppercase</strong> letters and spaces. A line stays one entry</li>
@@ -221,7 +226,7 @@
         <li><strong>Known English words</strong> from the offline SCOWL list, plus words you approve</li>
         <li><strong>Exact deduplication</strong> across every drop</li>
         <li><strong>Nothing deleted</strong>. Short lines, unknown words, and hand removals stay in Review or the restorable Discarded list</li>
-        <li><strong>Device storage</strong> with manual backup and restore</li>
+        <li><strong>Device storage</strong> with manual backup and restore, plus one-tap <strong>Save to Living Memory</strong></li>
       </ul>
       <div class="actions"><button class="btn danger" id="resetBtn">Reset local archive…</button></div>
     </section>
@@ -1276,7 +1281,38 @@
   $('restoreDiscardBtn').onclick=restoreAllDiscarded;
   $('findJunkBtn').onclick=showJunk;$('moveJunkBtn').onclick=moveAllJunk;
   $('masterBtn').onclick=()=>download('MASTER_AZ_INDEX.txt',state.phrases.join('\n'));$('azBtn').onclick=()=>download('A_Z_TEXT_BUNDLE.txt',azBundle());$('logBtn').onclick=()=>download('PROCESS_LOG.txt',logText());
-  $('backupBtn').onclick=()=>download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');$('sealedBtn').onclick=sealed;
+  $('backupBtn').onclick=()=>{download('HORUS_ARCHIVE_BACKUP.json',JSON.stringify(state,null,2),'application/json');try{localStorage.setItem(KEY+'_LAST_BACKUP',new Date().toISOString())}catch(err){}lmShowLast()};
+  // ---- Living Memory: save approved lines to the shared HORUS index (Supabase drop_lines) ----
+  const LM_URL='https://ahjvqfpxynhaqlrgldgp.supabase.co/rest/v1/rpc/drop_lines';
+  const LM_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoanZxZnB4eW5oYXFscmdsZGdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDM3NTYsImV4cCI6MjA5NjkxOTc1Nn0.G_pH0watJqGEzgBijYwHnltjJG9iQeYgc4e-EwpzRBE';
+  function lmWhen(k){try{const v=localStorage.getItem(KEY+k);return v?new Date(v).toLocaleString():'never'}catch(err){return 'unknown'}}
+  function lmShowLast(){const n=$('lmStatus');if(n&&!n.dataset.busy){n.className='notice';n.textContent='Last saved to Living Memory: '+lmWhen('_LAST_LM_SAVE')+' · Last backup file: '+lmWhen('_LAST_BACKUP')}}
+  async function lmPost(lines,batch,add){
+    for(let t=0;t<3;t++){
+      try{const r=await fetch(LM_URL,{method:'POST',headers:{apikey:LM_KEY,Authorization:'Bearer '+LM_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_lines:lines,p_source:'SOLAR FUNNEL',p_batch:batch,p_add:add})});
+        if(r.ok) return await r.json(); const txt=await r.text(); if(r.status<500) throw new Error(txt.slice(0,160));}
+      catch(err){if(t===2) throw err}
+      await new Promise(z=>setTimeout(z,1500*(t+1)));
+    }
+  }
+  async function lmRun(add){
+    const n=$('lmStatus'), lines=state.phrases.slice();
+    if(!lines.length){n.className='notice';n.textContent='The archive here is empty, so there is nothing to save yet.';return}
+    $('lmCheckBtn').disabled=$('lmSaveBtn').disabled=true;n.dataset.busy='1';n.className='notice';
+    const stamp=new Date().toISOString().replace(/[-:T]/g,'').slice(0,14), tot={approved:0,review:0,added:0,already:0};
+    try{
+      for(let i=0,part=1;i<lines.length;i+=2000,part++){
+        n.textContent=(add?'Saving':'Checking')+' part '+part+' of '+Math.ceil(lines.length/2000)+'…';
+        const r=await lmPost(lines.slice(i,i+2000),'solar_funnel_'+stamp+'_'+part,add);
+        tot.approved+=r.new_approved;tot.review+=r.new_review;tot.added+=r.added;tot.already+=r.already_in_archive;
+      }
+      if(add){try{localStorage.setItem(KEY+'_LAST_LM_SAVE',new Date().toISOString())}catch(err){}}
+      n.className='notice ok';
+      n.textContent=(add?'Saved. '+tot.added.toLocaleString()+' new lines added ('+tot.approved.toLocaleString()+' approved, '+tot.review.toLocaleString()+' to review). ':'Check done, nothing added. '+tot.approved.toLocaleString()+' would be approved, '+tot.review.toLocaleString()+' would go to review. ')+tot.already.toLocaleString()+' were already in Living Memory.';
+    }catch(err){n.className='notice bad';n.textContent='Stopped: '+(err&&err.message||err)+'. Check your internet and press again; repeats are skipped.'}
+    delete n.dataset.busy;$('lmCheckBtn').disabled=$('lmSaveBtn').disabled=false;
+  }
+  $('lmCheckBtn').onclick=()=>lmRun(false);$('lmSaveBtn').onclick=()=>lmRun(true);lmShowLast();$('sealedBtn').onclick=sealed;
   $('importBtn').onclick=()=>$('importFile').click();
   $('restoreBtn').onclick=()=>$('importFile').click();
   $('importFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(f) await importBackupFile(f)};
